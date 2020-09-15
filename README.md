@@ -1,3 +1,5 @@
+# OpenRTM-aist Python用 Paho MQTT通信モジュール
+
 本ソフトウェアはロボットミドルウェアの一つであるRTミドルウェアで構築されたロボットシステムにおいて、MQTT（Message Queuing Telemetry Transport）プロトコルによる通信を実現する産業技術総合研究所開発のOpenRTM-aist Python用拡張モジュール群です。  
 OpenRTM-aistを本モジュール群で拡張することで、RTコンポーネントのデータポートのInterface TypeにMQTTを追加することができます。Interface TypeとしてMQTTを選択することでデータポート間の通信をMQTTで行えるようになります。  
 
