@@ -3,7 +3,7 @@
 本ソフトウェアはロボットミドルウェアの一つであるRTミドルウェアで構築されたロボットシステムにおいて、MQTT（Message Queuing Telemetry Transport）プロトコルによる通信を実現する産業技術総合研究所開発のOpenRTM-aist Python用拡張モジュール群です。  
 OpenRTM-aistを本モジュール群で拡張することで、RTコンポーネントのデータポートのInterface TypeにMQTTを追加することができます。Interface TypeとしてMQTTを選択することでデータポート間の通信をMQTTで行えるようになります。  
 
-Fig.
+![top01](https://user-images.githubusercontent.com/40682353/93169044-36b4e500-f75f-11ea-9bce-aa67e1d98ec4.png)
 
 ## Target users
 * OpenRTM-aistのユーザでMQTTの初学者が、RTシステムを通してMQTTによる通信システムを試しに体験してみたい方
@@ -51,7 +51,7 @@ MQTT通信モジュールは以下の4種類で構成されています。
 
 プロパティは以下のようにRTSystemEditor上でRTコンポーネントにおけるデータポートの接続を行う際に表示されるConnector Profileダイアログの"詳細"からKey-Value形式で入力することができます。Keyは必ずしも上記の順番で入力する必要はありません。いくつかのKeyを選択し、順不同で入力することができます。
 
-Fig.
+![features01](https://user-images.githubusercontent.com/40682353/93169151-6fed5500-f75f-11ea-957e-ab352e508656.png)
 
 ## Requirement
  
@@ -178,39 +178,39 @@ $ python ConsoleOut.py -f rtcSub.conf
 ```
 
 ### (4) データポートとBrokerの接続
-Fig.
+![usage01](https://user-images.githubusercontent.com/40682353/93169247-aa56f200-f75f-11ea-9cf0-c38fff156859.png)
 
 OpenRTPを起動し、RTSystemEditorのSystem Diagramに先ほど実行したRTコンポーネントをセットします。
 
-Fig.
+![usage02](https://user-images.githubusercontent.com/40682353/93169326-d4a8af80-f75f-11ea-845a-9a0dc91d97df.png)
 
 データ送信側RTコンポーネントConsoleInのOutPortを右クリックし、"接続"を選択します。
 
-Fig.
+![usage03](https://user-images.githubusercontent.com/40682353/93169366-e68a5280-f75f-11ea-9762-409585f32a36.png)
 
 Connector Profileダイアログが立ち上がるのでProfile中の【Interface Type】から"paho_mqtt"を選択します。これで通信インタフェースがCORBAからMQTTへと切り替わります。
 
-Fig.
+![usage04](https://user-images.githubusercontent.com/40682353/93169383-f144e780-f75f-11ea-986a-204dcffbfa70.png)
 
 MQTT通信モジュールのプロパティをdefaultのまま使用する場合は右下の"OK"ボタンをクリックすることでdefaultの情報でMQTT Brokerへの接続が行われます。OutPortが緑色になればBrokerへの接続完了です。MQTT通信モジュールのプロパティを変更したい場合は、モジュールに渡すプロパティを設定するため、左下の"詳細"をチェックします。
 
-Fig.
+![usage05](https://user-images.githubusercontent.com/40682353/93169411-00c43080-f760-11ea-8c75-15cb1404761b.png)
 
 Connector ProfileダイアログにBufferの各種設定と、MQTT通信モジュールのプロパティ設定を行えるダイアログが追加表示されます。最下部の"Name"および"Value"と表示されている部分がプロパティ設定箇所です。右横の"追加"ボタンをクリックします。
 
-Fig.
+![usage06](https://user-images.githubusercontent.com/40682353/93169432-0caff280-f760-11ea-8dde-0206c82b1246.png)
 
 プロパティの設定箇所が追加されます。複数のプロパティを変更する場合は必要分"追加"ボタンをクリックしてください。プロパティはNameとValueの組み合わせ、すなわちkey-value型で設定できます。Featuresで示した設定可能なプロパティを確認しながら、変更が必要なプロパティを入力します。例えばMQTT BrokerのアドレスとTopic名を変更したい場合は次のように入力します。なお、Brokerの設定次第では使用可能なTopicが制限されていることもあるのでサーバの管理者に、クライアント側でTopicを設定可能かどうか予め確認しておきましょう。
 
-Fig.
+![usage07](https://user-images.githubusercontent.com/40682353/93169451-16d1f100-f760-11ea-8827-f1b011ce4bd8.png)
 
 プロパティ設定後、右下の"OK"ボタンをクリックすれば、入力したプロパティがMQTT通信モジュールに反映され、更新された情報を元にMQTT Brokerへの接続が行われます。
 
-Fig.
+![usage08](https://user-images.githubusercontent.com/40682353/93169472-20f3ef80-f760-11ea-88af-32beee2dcf1e.png)
 
 このように、MQTT通信インタフェースを用いた場合はデータポート単体でBrokerに接続する形をとります。このため、データポート間での結線は行いません。なぜならばMQTTにおけるPublisher（送信者）とSubscriber（受信者）の各クライアントの接続先はサーバとなるBrokerであり、お互いに直接的に接続する通信アーキテクチャとはなっていないためです。BrokerはRTSystemEditor上では表示されませんが、データポートが緑色に変わればBrokerへの接続は成功しています。
 
-Fig.
+![usage09](https://user-images.githubusercontent.com/40682353/93169504-2d784800-f760-11ea-9b64-49ad91b6675c.png)
 
 データ受信側RTコンポーネントConsoleOutも同じ要領で、InPort右クリックからConnector Profileの設定を行い、MQTT Brokerに単体で接続します。その後、通常通りそれぞれのRTコンポーネントをAvtivate化することでRTシステムが稼働します。
 
