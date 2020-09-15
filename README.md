@@ -1,6 +1,6 @@
 # OpenRTM-aist Python用 Paho MQTT通信モジュール
 
-本ソフトウェアはロボットミドルウェアの一つであるRTミドルウェアで構築されたロボットシステムにおいて、MQTT（Message Queuing Telemetry Transport）プロトコルによる通信を実現する産業技術総合研究所開発のOpenRTM-aist Python用拡張モジュール群です。  
+本ソフトウェアはロボットミドルウェアの一つであるRTミドルウェアで構築されたロボットシステムにおいて、**MQTT（Message Queuing Telemetry Transport）プロトコル**による通信を実現する産業技術総合研究所開発のOpenRTM-aist Python用拡張モジュール群です。  
 OpenRTM-aistを本モジュール群で拡張することで、RTコンポーネントのデータポートのInterface TypeにMQTTを追加することができます。Interface TypeとしてMQTTを選択することでデータポート間の通信をMQTTで行えるようになります。  
 
 <img src="https://user-images.githubusercontent.com/40682353/93169044-36b4e500-f75f-11ea-9bce-aa67e1d98ec4.png" width=70%>
@@ -81,7 +81,7 @@ $ sudo pip3 install paho-mqtt
 $ sudo apt install mosquitto
 ```
 
-(4) githubのリポジトリからMQTT通信モジュールに関連するファイル群をcloneし、MQTT通信モジュール群をインストール。なお、アンインストールは`sudo pip uninstall OpenRTM_aist_paho_mqtt_module`で行えます。
+(4) githubのリポジトリからMQTT通信モジュールに関連するファイル群をcloneし、MQTT通信モジュール群をインストール。なお、アンインストールは`sudo pip3 uninstall OpenRTM_aist_paho_mqtt_module`で行えます。
 ```bash
 $ cd ~/
 $ git clone https://github.com/dyubicuoa/OpenRTM_aist_paho_mqtt_interface
@@ -217,7 +217,7 @@ Connector ProfileダイアログにBufferの各種設定と、MQTT通信モジ�
 ## Note
 
 ### データポート間の結線について
-MQTT通信インタフェースはデータポート右クリックでの接続が基本です。データポート間の結線によるBrokerへの接続も可能ですが、できるだけ行わないでください。どうしても結線したい場合はプロパティのClient IDはバッティングを避けるため、デフォルトのランダム値を使用するようにしてください。また、1対Nで結線する場合、例えばOutPort一つに対して複数のInPortをすべて結線でBrokerに接続しようとすると、OutPort側の通信モジュールのインスタンスが複数立ち上がるため、メッセージングが多重化してしまい想定通りの通信ができなくなりますので気をつけてください。
+MQTT通信インタフェースは**データポート右クリックでの接続が基本**です。データポート間の結線によるBrokerへの接続も可能ですが、できるだけ行わないでください。どうしても結線したい場合はプロパティのClient IDはバッティングを避けるため、デフォルトのランダム値を使用するようにしてください。また、1対Nで結線する場合、例えばOutPort一つに対して複数のInPortをすべて結線でBrokerに接続しようとすると、OutPort側の通信モジュールのインスタンスが複数立ち上がるため、メッセージングが多重化してしまい想定通りの通信を行えなくなるので気をつけてください。
 
 ### 動作確認済みの環境
 * Ubuntu 16.04 x86-64 CPU
