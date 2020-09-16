@@ -81,7 +81,7 @@ $ sudo pip3 install paho-mqtt
 $ sudo apt install mosquitto
 ```
 
-(4) githubのリポジトリからMQTT通信モジュールに関連するファイル群をcloneし、MQTT通信モジュール群をインストール。なお、アンインストールは`sudo pip3 uninstall OpenRTM_aist_paho_mqtt_module`で行えます。
+(4) githubのリポジトリからMQTT通信モジュールに関連するファイル群をcloneし、MQTT通信モジュール群をインストール。インストール先は`pip3 show OpenRTM_aist_paho_mqtt_module`の"Location"で確認できます。なお、アンインストールする場合は`sudo pip3 uninstall OpenRTM_aist_paho_mqtt_module`で行ってください。
 ```bash
 $ cd ~/
 $ git clone https://github.com/dyubicuoa/OpenRTM_aist_paho_mqtt_interface
@@ -103,7 +103,7 @@ $ sudo pip install paho-mqtt
 $ sudo apt install mosquitto
 ```
 
-(4) githubのリポジトリからMQTT通信モジュールに関連するファイル群をcloneし、MQTT通信モジュール群をインストール。なお、アンインストールは`sudo pip uninstall OpenRTM_aist_paho_mqtt_module`で行えます。
+(4) githubのリポジトリからMQTT通信モジュールに関連するファイル群をcloneし、MQTT通信モジュール群をインストール。インストール先は`pip show OpenRTM_aist_paho_mqtt_module`の"Location"で確認できます。なお、アンインストールする場合は`sudo pip uninstall OpenRTM_aist_paho_mqtt_module`で行ってください。
 ```bash
 $ cd ~/
 $ git clone https://github.com/dyubicuoa/OpenRTM_aist_paho_mqtt_interface
