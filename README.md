@@ -222,6 +222,7 @@ MQTT通信インタフェースは**データポート右クリックでの接�
 ### 動作確認済みの環境
 * Ubuntu 16.04 x86-64 CPU
 * Ubuntu 18.04 x86-64 CPU
+* Ubuntu 20.04 x86-64 CPU
  
 ## Author
 
