@@ -1,8 +1,12 @@
-## 0.2.0 (September 19, 2020)
-rtc.confからMQTT通信モジュールに関連するプロパティを事前設定できるように変更  
-* OpenRTM-aist ver.1.2.2(Python3系）の通信モジュールについてプロパティ読み込み部分のコード修正を伴う、産総研安藤先生のプルリクエストをマージ
-* OpenRTM-aist ver.1.2.1以前のコードも、プロパティ値の読み込み部分について同様の修正
-* rtc.confでのプロパティ設定に関するマニュアルを追加
+## 0.2.1 (September 19, 2020)
+* OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュール
+ 1. ver.0.2.0で行った修正を同様に適用
+ 1. OpenRTM-aist ver.1.2.0以降であれば、rtc.confにて"manager.components.preconnect"指定から、通信モジュールに関連するプロパティの事前設定できるように変更
+
+## 0.2.0 (September 18, 2020)
+* OpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+  1. "dataport"から階層化された名前空間に対応できるよう関数findPropを追加
+  1. 1.を利用した機能追加で、rtc.confにて"manager.components.preconnect"指定から、通信モジュールに関連するプロパティの事前設定できるように変更
 
 ## 0.1.0 (September 15, 2020)
 初期バージョンリリース

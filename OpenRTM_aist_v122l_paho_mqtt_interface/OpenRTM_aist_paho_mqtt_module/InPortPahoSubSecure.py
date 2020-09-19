@@ -194,7 +194,7 @@ class InPortPahoSubSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
     return False
 
   ##
-  # @brief Find index of the from properties
+  # @brief Find index of the properties
   #
   # acceptable properties:
   #     {<key>, dataport.<key>, dataport.inport.<key>}

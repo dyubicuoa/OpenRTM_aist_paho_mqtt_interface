@@ -194,6 +194,21 @@ class InPortPahoSubSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
     return False
 
   ##
+  # @brief Find index of the properties
+  #
+  # acceptable properties:
+  #     {<key>, dataport.<key>, dataport.inport.<key>}
+  #
+  def findProp(self, properties, key):
+    index = OpenRTM_aist.NVUtil.find_index(properties, key)
+    if index >= 0: return index
+    index = OpenRTM_aist.NVUtil.find_index(properties, 'dataport.' + key)
+    if index >= 0: return index
+    index = OpenRTM_aist.NVUtil.find_index(properties, 'dataport.inport.' + key)
+    if index >= 0: return index
+    return -1
+
+  ##
   # @brief Set properties relating to Paho Client
   #
   def subscribePahoSubSecure(self, properties):
@@ -210,16 +225,16 @@ class InPortPahoSubSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
     PN_CLTCERT = "cltcert"
     PN_CLTKEY = "cltkey"
 
-    index0 = OpenRTM_aist.NVUtil.find_index(properties, PN_HOST)
-    index1 = OpenRTM_aist.NVUtil.find_index(properties, PN_PORT)
-    index2 = OpenRTM_aist.NVUtil.find_index(properties, PN_KPALV)
-    index3 = OpenRTM_aist.NVUtil.find_index(properties, PN_TOPIC)
-    index4 = OpenRTM_aist.NVUtil.find_index(properties, PN_QOS)
-    index5 = OpenRTM_aist.NVUtil.find_index(properties, PN_ID)
-    index6 = OpenRTM_aist.NVUtil.find_index(properties, PN_CS)
-    index7 = OpenRTM_aist.NVUtil.find_index(properties, PN_CACERT)
-    index8 = OpenRTM_aist.NVUtil.find_index(properties, PN_CLTCERT)
-    index9 = OpenRTM_aist.NVUtil.find_index(properties, PN_CLTKEY)
+    index0 = self.findProp(properties, PN_HOST)
+    index1 = self.findProp(properties, PN_PORT)
+    index2 = self.findProp(properties, PN_KPALV)
+    index3 = self.findProp(properties, PN_TOPIC)
+    index4 = self.findProp(properties, PN_QOS)
+    index5 = self.findProp(properties, PN_ID)
+    index6 = self.findProp(properties, PN_CS)
+    index7 = self.findProp(properties, PN_CACERT)
+    index8 = self.findProp(properties, PN_CLTCERT)
+    index9 = self.findProp(properties, PN_CLTKEY)
 
     tmp_host = "localhost"
     tmp_port = 8883

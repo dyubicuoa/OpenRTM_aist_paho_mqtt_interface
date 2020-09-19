@@ -194,6 +194,21 @@ class InPortPahoSubscriber(OpenRTM_aist.InPortProvider, PahoSubscriber):
     return False
 
   ##
+  # @brief Find index of the properties
+  #
+  # acceptable properties:
+  #     {<key>, dataport.<key>, dataport.inport.<key>}
+  #
+  def findProp(self, properties, key):
+    index = OpenRTM_aist.NVUtil.find_index(properties, key)
+    if index >= 0: return index
+    index = OpenRTM_aist.NVUtil.find_index(properties, 'dataport.' + key)
+    if index >= 0: return index
+    index = OpenRTM_aist.NVUtil.find_index(properties, 'dataport.inport.' + key)
+    if index >= 0: return index
+    return -1
+
+  ##
   # @brief Set properties relating to Paho Client
   #
   def subscribePahoSubscriber(self, properties):
@@ -207,13 +222,13 @@ class InPortPahoSubscriber(OpenRTM_aist.InPortProvider, PahoSubscriber):
     PN_ID = "id"
     PN_CS = "cs"
 
-    index0 = OpenRTM_aist.NVUtil.find_index(properties, PN_HOST)
-    index1 = OpenRTM_aist.NVUtil.find_index(properties, PN_PORT)
-    index2 = OpenRTM_aist.NVUtil.find_index(properties, PN_KPALV)
-    index3 = OpenRTM_aist.NVUtil.find_index(properties, PN_TOPIC)
-    index4 = OpenRTM_aist.NVUtil.find_index(properties, PN_QOS)
-    index5 = OpenRTM_aist.NVUtil.find_index(properties, PN_ID)
-    index6 = OpenRTM_aist.NVUtil.find_index(properties, PN_CS)
+    index0 = self.findProp(properties, PN_HOST)
+    index1 = self.findProp(properties, PN_PORT)
+    index2 = self.findProp(properties, PN_KPALV)
+    index3 = self.findProp(properties, PN_TOPIC)
+    index4 = self.findProp(properties, PN_QOS)
+    index5 = self.findProp(properties, PN_ID)
+    index6 = self.findProp(properties, PN_CS)
 
     tmp_host = "localhost"
     tmp_port = 1883

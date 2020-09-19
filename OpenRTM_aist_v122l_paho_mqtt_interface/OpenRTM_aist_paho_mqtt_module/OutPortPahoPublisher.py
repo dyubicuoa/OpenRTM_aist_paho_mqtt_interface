@@ -132,7 +132,7 @@ class OutPortPahoPublisher(OpenRTM_aist.InPortConsumer, PahoPublisher):
     return
 
   ##
-  # @brief Find index of the from properties
+  # @brief Find index of the properties
   #
   # acceptable properties:
   #     {<key>, dataport.<key>, dataport.outport.<key>}
