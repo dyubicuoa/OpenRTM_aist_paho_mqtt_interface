@@ -49,7 +49,15 @@ MQTT通信モジュールは以下の4種類で構成されています。
 | 9. | cltcert | './client.crt' | クライアント証明書へのpath。クライアントの真正性を証明するのに必要 |
 | 10. | cltkey | './client.key' | クライアント秘密鍵へのpath。クライアントの真正性を証明するのに必要 |
 
-プロパティは以下のようにRTSystemEditor上でRTコンポーネントにおけるデータポートの接続を行う際に表示されるConnector Profileダイアログの"詳細"からKey-Value形式で入力することができます。Keyは必ずしも上記の順番で入力する必要はありません。いくつかのKeyを選択し、順不同で入力することができます。
+プロパティはOpenRTM-aist ver.1.2.0以降であれば、RTコンポーネントの実行以前に、rtc.confにて事前に設定することが可能です。このrtc.confを"-f"でオプション指定し、RTコンポーネントを実行することでMQTT Brokerへの接続が完了した状態へと遷移します。Keyは必ずしも上記の順番で入力する必要はありません。いくつかのKeyを選択し、順不同で入力することができます。
+```bash
+# rtc.conf
+：
+# MQTT BrokerへのOutPortの自動接続
+manager.components.preconnect: ConsoleIn0.out?interface_type=paho_mqtt&host=127.0.0.1&topic=hoge
+```
+
+プロパティの事前設定を利用しない場合、もしくはver.1.2.0より前のバージョンのOpenRTM-aistを利用されている場合は、プロパティは以下のようににRTSystemEditor上でRTコンポーネントにおけるデータポートの接続を行う際に表示されるConnector Profileダイアログの"詳細"からKey-Value形式で直接入力することになります。
 
 <img src="https://user-images.githubusercontent.com/40682353/93169151-6fed5500-f75f-11ea-957e-ab352e508656.png" width=50%>
 
@@ -115,8 +123,11 @@ $ sudo pip install .
 
 以下では、Linux（Ubuntu or Debian）の環境下において、OpenRTM-aist上のMQTT通信インタフェースを利用してロボットシステムを構築する手順を示します。構築例で使用するのはOpenRTM-aistで予めexampleとして用意されているConsoleInとConsoleOutの各コンポーネントですが、当然ながらエンドユーザが独自に開発したRTコンポーネントにも応用可能です。
 
-### (1) rtc.confでのモジュール指定
-MQTT通信モジュールをOpenRTM-aistに組み込むには、MQTTで通信を行いたいRTコンポーネントのコンフィギュレーションファイル"rtc.conf"において、MQTT通信モジュールへのpathとモジュール名を指定する必要があります。OutPortはデータを送信する側なので、OutPortPahoPublisherもしくはOutPortPahoPubSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、OutPortPahoSubscriberもしくはOutPortPahoSubSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
+### (1) rtc.confでの事前設定
+RTコンポーネントのコンフィギュレーションファイル"rtc.conf"では(1a)と(1b)の2種類の設定を行います。この内、(1a)の『モジュールの指定』は必ず行う必要があります。(1b)の『モジュールのプロパティ設定とMQTT Brokerへの自動接続』は、Featuresで示したMQTT通信モジュールに関連したプロパティをRTコンポーネントの実行前に事前に設定し、MQTT Brokerへの接続の手間を省きたい場合に行います。RTSystemEditorで直接プロパティを入力する場合、(1b)は省略してください。
+
+#### (1a) rtc.confでのモジュール指定
+MQTT通信モジュールをOpenRTM-aistに組み込むには、MQTTで通信を行いたいRTコンポーネントのrtc.confにおいて、MQTT通信モジュールへのpathとモジュール名を指定する必要があります。OutPortはデータを送信する側なので、OutPortPahoPublisherもしくはOutPortPahoPubSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、OutPortPahoSubscriberもしくはOutPortPahoSubSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
 
 例えば、セキュア通信機能なしのMQTT通信インタフェースを用いてOutPortからデータを送信したい場合は以下のようにrtc.confに記述します。
 ```bash
@@ -149,6 +160,28 @@ manager.modules.preload: OutPortPahoPubSecure.py, InPortPahoSubSecure.py
 ```
 
 MQTT通信モジュールのインストール先は、`pip show OpenRTM_aist_paho_mqtt_module`で確認できます。なお、インストール後はインストール先のモジュールではなく、cloneしたレポジトリ内にあるモジュールを指定しても構いません。"rtc.conf"の設定例はリポジトリの"OpenRTM_aist_paho_mqtt_module/samples/rtc_conf/"配下に置いてあるので参考にしてください。
+
+#### (1b) rtc.confでのモジュールのプロパティ設定とMQTT Brokerへの自動接続
+モジュールのプロパティをrtc.confで事前に設定し、RTコンポーネントの実行と同時に対象のデータポートをMQTT Brokerに自動的に接続するには"**manager.components.preconnect:**"指定を利用します。さらに"**manager.components.preactivation:**"指定を用いることで対象のRTコンポーネントの自動Activate化が可能となります。  
+例えばRTコンポーネントConsoleInにおけるOutPort名"out"でInterface Typeとしてセキュア通信機能なしのMQTT通信インタフェースを選択し、BrokerエンドポイントアドレスとTopic名の各プロパティを設定し、Brokerへの自動接続とRTコンポーネントの自動Activate化を行いたい場合は、以下のようにrtc.confに追記します。
+```bash
+# rtcPrePub.conf
+：
+# RTコンポーネントの自動Activate化
+manager.components.preactivation: ConsoleIn0
+# MQTT BrokerへのOutPortの自動接続
+manager.components.preconnect: ConsoleIn0.out?interface_type=paho_mqtt&host=127.0.0.1&topic=hoge
+```
+
+RTコンポーネントConsoleOutにおけるInPort名"in"でInterface Typeとしてセキュア通信機能付きのMQTT通信インタフェースを選択し、セキュア通信に必要となる各種ファイルへのpathを設定し、Brokerへの自動接続とRTコンポーネントの自動Activate化を行いたい場合は以下の通り。
+```bash
+# rtcPreSubSecure.conf
+：
+# RTコンポーネントの自動Activate化
+manager.components.preactivation: ConsoleOut0
+# MQTT BrokerへのInPortの自動接続
+manager.components.preconnect: ConsoleOut0.in?interface_type=paho_mqtts&cacert=~/tls/ca.crt&cltcert=~/tls/clt.crt&cltkey=~/tls/clt.key
+```
 
 ### (2) MQTT Brokerの稼働状況確認
 RTコンポーネント実行前にMQTT Brokerが稼働中であることを確認してください。特にBrokerソフトウェアインストール直後は稼働していない場合が多いです。
