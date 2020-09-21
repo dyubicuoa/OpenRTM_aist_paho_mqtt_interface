@@ -262,7 +262,7 @@ Subscription started: 1 (0,)
 
 <img src="https://user-images.githubusercontent.com/40682353/93737397-10d78680-fc1e-11ea-8987-4da792f94b0e.png" width=70%>
 
-後は通常通り、RTSystemEditorかRTShellでConsoleInをActivate化すればRTシステムが稼働します。Deactivate化も同様にRTSystemEditorかRTShellから実行可能です。
+BrokerはRTSystemEditor上では表示されません。しかし、OutPortとInPortの各データポートが緑色になっていれば、Brokerへの接続が完了していることを示しています。後は通常通り、RTSystemEditorかRTShellでConsoleInをActivate化すればRTシステムが稼働します。Deactivate化も同様にRTSystemEditorかRTShellから実行可能です。
 
 ### RTSystemEditor上でのマニュアル操作によりRTシステムを構築する手順
 
