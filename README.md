@@ -299,6 +299,8 @@ manager.modules.load_path: /usr/local/lib/python2.7/dist-packages/OpenRTM_aist_p
 manager.modules.preload: OutPortPahoPubSecure.py, InPortPahoSubSecure.py
 ```
 
+MQTT通信モジュールへのpathはインストール先を指定するか、インストール後であればcloneしたレポジトリ内にあるモジュールを指定しても構いません。"rtc.conf"の設定例はリポジトリの"OpenRTM_aist_paho_mqtt_module/samples/rtc_conf/"配下に置いてあるので参考にしてください。
+
 #### (2) RTコンポーネントの実行
 (1)で設定したrtc.confをオプションで指定し、ターゲットとなるRTコンポーネントを実行します。
 
