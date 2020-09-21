@@ -1,11 +1,11 @@
 #!/bin/bash
 
 HOSTNAME="localhost"
-CONFNAME="rtc_SeqIn_${HOSTNAME}.conf"
-COMPNAME="SeqIn.py"
+CONFNAME="rtc_ConsoleOut_${HOSTNAME}.conf"
+COMPNAME="ConsoleOut.py"
 
-comp2_path=`dpkg -L openrtm-aist-python-example |grep ${COMPNAME}`
-comp3_path=`dpkg -L openrtm-aist-python3-example |grep ${COMPNAME}`
+comp2_path=`dpkg -L openrtm-aist-python-example |grep SimpleIO/${COMPNAME}`
+comp3_path=`dpkg -L openrtm-aist-python3-example |grep SimpleIO/${COMPNAME}`
 
 ############################################
 # Check RTC's path
@@ -57,18 +57,9 @@ logger.log_level: DEBUG
 manager.modules.load_path: ${mod_path}
 manager.modules.preload: InPortPahoSubscriber.py, OutPortPahoPublisher.py
 
-manager.components.preactivation: SequenceInComponent0
+manager.components.preactivation: ConsoleOut0
 manager.components.preconnect: \\
-    SequenceInComponent0.Octet?interface_type=paho_mqtt&host=${HOSTNAME}&topic=octet, \\
-    SequenceInComponent0.Short?interface_type=paho_mqtt&host=${HOSTNAME}&topic=short, \\
-    SequenceInComponent0.Long?interface_type=paho_mqtt&host=${HOSTNAME}&topic=long, \\
-    SequenceInComponent0.Float?interface_type=paho_mqtt&host=${HOSTNAME}&topic=float, \\
-    SequenceInComponent0.Double?interface_type=paho_mqtt&host=${HOSTNAME}&topic=double, \\
-    SequenceInComponent0.OctetSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=octetseq, \\
-    SequenceInComponent0.ShortSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=shortseq, \\
-    SequenceInComponent0.LongSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=longseq, \\
-    SequenceInComponent0.FloatSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=floatseq, \\
-    SequenceInComponent0.DoubleSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=doubleseq
+    ConsoleOut0.in?interface_type=paho_mqtt&host=${HOSTNAME}&topic=long
 EOF
 
 #############

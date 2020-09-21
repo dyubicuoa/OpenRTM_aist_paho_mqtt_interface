@@ -1,7 +1,6 @@
 #!/bin/bash
 
 HOSTNAME="localhost"
-HOSTNAME="140.227.125.181"
 CONFNAME="rtc_SeqOut_${HOSTNAME}.conf"
 COMPNAME="SeqOut.py"
 
@@ -45,6 +44,7 @@ else
     echo "Unknown error. (never comes here)"
     exit 1
 fi
+echo "python:    " ${python_cmd}
 echo "comp_path: " ${comp_path}
 echo "mod_path:  " ${mod_path}
 
