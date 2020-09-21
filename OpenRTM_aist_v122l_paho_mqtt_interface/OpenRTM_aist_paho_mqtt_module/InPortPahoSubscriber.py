@@ -194,7 +194,7 @@ class InPortPahoSubscriber(OpenRTM_aist.InPortProvider, PahoSubscriber):
     return False
 
   ##
-  # @brief Find index of the from properties
+  # @brief Find index of the properties
   #
   # acceptable properties:
   #     {<key>, dataport.<key>, dataport.inport.<key>}
@@ -229,8 +229,6 @@ class InPortPahoSubscriber(OpenRTM_aist.InPortProvider, PahoSubscriber):
     index4 = self.findProp(properties, PN_QOS)
     index5 = self.findProp(properties, PN_ID)
     index6 = self.findProp(properties, PN_CS)
-
-
 
     tmp_host = "localhost"
     tmp_port = 1883

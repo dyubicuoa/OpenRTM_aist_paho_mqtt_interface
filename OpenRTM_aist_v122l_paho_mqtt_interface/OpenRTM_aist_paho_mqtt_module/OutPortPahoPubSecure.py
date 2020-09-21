@@ -132,7 +132,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     return
 
   ##
-  # @brief Find index of the from properties
+  # @brief Find index of the properties
   #
   # acceptable properties:
   #     {<key>, dataport.<key>, dataport.outport.<key>}
