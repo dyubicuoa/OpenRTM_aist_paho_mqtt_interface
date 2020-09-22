@@ -1,6 +1,7 @@
 # OpenRTM-aist Python用 Paho MQTT通信モジュール
 
 本ソフトウェアはロボットミドルウェアの一つであるRTミドルウェアで構築されたロボットシステムにおいて、**MQTT（Message Queuing Telemetry Transport）プロトコル**による通信を実現する産業技術総合研究所開発のOpenRTM-aist Python用拡張モジュール群です。  
+
 OpenRTM-aistを本モジュール群で拡張することで、RTコンポーネントのデータポートのInterface TypeにMQTTを追加することができます。Interface TypeとしてMQTTを選択することでデータポート間の通信をMQTTで行えるようになります。  
 
 <img src="https://user-images.githubusercontent.com/40682353/93169044-36b4e500-f75f-11ea-9bce-aa67e1d98ec4.png" width=70%>
@@ -122,10 +123,12 @@ $ sudo pip install .
 ## Usage
 
 以下では、Linux（Ubuntu or Debian）の環境下において、OpenRTM-aist上のMQTT通信インタフェースを利用してロボットシステムを構築する手順を2通り示します。一つめは**MQTT通信モジュールに関連するプロパティをrtc.confで事前に設定し、RTコンポーネント実行時にデータポートをMQTT Brokerに自動接続する方法**です。もう一つは**RTコンポーネント実行後にRTSystemEditorを用い、モジュールのプロパティを直接入力し、マニュアルでBrokerに接続する方法**となります。前者はOpenRTM-aist ver.1.2.0以降で追加された新機能用いるため、ver.1.2.0以降のユーザ用、後者はver.1.2.0より前のバージョンのOpenRTM-aistユーザ、もしくはRTSystemEditor上でマニュアル操作によりロボットシステムを一から構築したいユーザ用です。操作上は、前者がrtc.confからモジュールに対してプロパティを渡せることから、ロボットシステムの構築作業が格段に簡易化されます。ですので、通常は前者の構築手順を選択することになります。  
+
 なお、構築例で使用するのはOpenRTM-aistで予めexampleとして用意されているConsoleInとConsoleOutの各コンポーネントですが、当然ながらエンドユーザが独自に開発したRTコンポーネントにも応用可能です。
 
 #### (0) MQTT Brokerの稼働状況確認
 MQTT通信インタフェースの場合、**データポートの接続先はMQTT Broker**となります。CORBAのようにデータポート間で接続されるわけではありません。MQTT通信インタフェースでは各データポートは単独でBrokerに接続する形をとります。このことからロボットシステム構築以前にBrokerが稼働していることが前提条件となります。ですのでRTコンポーネント実行前にまずBrokerが稼働中であることを確認してください。  
+
 Brokerはその運用形態により以下の3種類に分かれます。
 
 1. クラウドサービスとして展開されたIoTプラットフォーム（例：AWS IoT Core, Azure IoT Hub, Google Cloud IoT Core)
@@ -325,11 +328,11 @@ OpenRTPを起動し、RTSystemEditorのSystem Diagramに先ほど実行したRT�
 
 Connector Profileダイアログが立ち上がるのでProfile中の【Interface Type】から"paho_mqtt"を選択します。これで通信インタフェースがCORBAからMQTTへと切り替わります。
 
-<img src="https://user-images.githubusercontent.com/40682353/93169383-f144e780-f75f-11ea-986a-204dcffbfa70.png" width=50%>
+<img src="https://user-images.githubusercontent.com/40682353/93169383-f144e780-f75f-11ea-986a-204dcffbfa70.png" width=40%>
 
 MQTT通信モジュールのプロパティをdefaultのまま使用する場合は右下の"OK"ボタンをクリックすることでdefaultの情報でMQTT Brokerへの接続が行われます。OutPortが緑色になればBrokerへの接続完了です。MQTT通信モジュールのプロパティを変更したい場合は、モジュールに渡すプロパティを設定するため、左下の"詳細"をチェックします。
 
-<img src="https://user-images.githubusercontent.com/40682353/93169411-00c43080-f760-11ea-8c75-15cb1404761b.png" width=50%>
+<img src="https://user-images.githubusercontent.com/40682353/93169411-00c43080-f760-11ea-8c75-15cb1404761b.png" width=40%>
 
 Connector ProfileダイアログにBufferの各種設定と、MQTT通信モジュールのプロパティ設定を行えるダイアログが追加表示されます。最下部の"Name"および"Value"と表示されている部分がプロパティ設定箇所です。右横の"追加"ボタンをクリックします。
 
@@ -352,7 +355,7 @@ Connector ProfileダイアログにBufferの各種設定と、MQTT通信モジ�
 ## Note
 
 ### データポート間の結線について
-MQTT通信インタフェースは**データポート右クリックでの接続が基本**です。データポート間の結線によるBrokerへの接続も可能ですが、できるだけ行わないでください。どうしても結線したい場合はプロパティのClient IDはバッティングを避けるため、デフォルトのランダム値を使用するようにしてください。また、1対Nで結線する場合、例えばOutPort一つに対して複数のInPortをすべて結線でBrokerに接続するケースにおいては、OutPort側の通信モジュールのインスタンスが複数立ち上がるため、同一Topicのままだとメッセージングが多重化してしまい想定通りの通信を行えなくなるので気をつけてください。このケースでは、一つの結線ごとに別のTopicを設定することで問題を回避できます。
+MQTT通信インタフェースでは**データポート右クリックでの接続が基本**です。データポート間の結線によるBrokerへの接続も可能ですが、できるだけ行わないでください。どうしても結線したい場合はプロパティのClient IDはバッティングを避けるため、デフォルトのランダム値を使用するようにしてください。また、1対Nで結線する場合、例えばOutPort一つに対して複数のInPortをすべて結線でBrokerに接続するケースにおいては、OutPort側の通信モジュールのインスタンスが複数立ち上がるため、同一Topicのままだとメッセージングが多重化してしまい想定通りの通信を行えなくなるので気をつけてください。このケースでは、一つの結線ごとに別のTopicを設定することで問題を回避できます。
 
 ### 動作確認済みの環境
 * Ubuntu 16.04 x86-64 CPU
