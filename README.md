@@ -324,7 +324,7 @@ OpenRTPを起動し、RTSystemEditorのSystem Diagramに先ほど実行したRT�
 
 データ送信側RTコンポーネントConsoleInのOutPortを右クリックし、"接続"を選択します。
 
-<img src="https://user-images.githubusercontent.com/40682353/93169366-e68a5280-f75f-11ea-9762-409585f32a36.png" width=50%>
+<img src="https://user-images.githubusercontent.com/40682353/93169366-e68a5280-f75f-11ea-9762-409585f32a36.png" width=40%>
 
 Connector Profileダイアログが立ち上がるのでProfile中の【Interface Type】から"paho_mqtt"を選択します。これで通信インタフェースがCORBAからMQTTへと切り替わります。
 
@@ -332,7 +332,7 @@ Connector Profileダイアログが立ち上がるのでProfile中の【Interfac
 
 MQTT通信モジュールのプロパティをdefaultのまま使用する場合は右下の"OK"ボタンをクリックすることでdefaultの情報でMQTT Brokerへの接続が行われます。OutPortが緑色になればBrokerへの接続完了です。MQTT通信モジュールのプロパティを変更したい場合は、モジュールに渡すプロパティを設定するため、左下の"詳細"をチェックします。
 
-<img src="https://user-images.githubusercontent.com/40682353/93169411-00c43080-f760-11ea-8c75-15cb1404761b.png" width=40%>
+<img src="https://user-images.githubusercontent.com/40682353/93169411-00c43080-f760-11ea-8c75-15cb1404761b.png" width=50%>
 
 Connector ProfileダイアログにBufferの各種設定と、MQTT通信モジュールのプロパティ設定を行えるダイアログが追加表示されます。最下部の"Name"および"Value"と表示されている部分がプロパティ設定箇所です。右横の"追加"ボタンをクリックします。
 
