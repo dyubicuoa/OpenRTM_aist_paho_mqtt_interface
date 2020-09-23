@@ -388,9 +388,12 @@ $ sudo apt install python3-tk
 ```
 
 ### 動作確認済みの環境
-* Ubuntu 16.04 x86-64 CPU
-* Ubuntu 18.04 x86-64 CPU
-* Ubuntu 20.04 x86-64 CPU
+* Ubuntu 16.04, x86-64 CPU
+* Ubuntu 18.04, x86-64 CPU
+* Ubuntu 20.04, x86-64 CPU
+* Debian 9 (Stretch), x86-64 CPU
+* Raspbian (Stretch), ARM CPU
+* Raspberry Pi OS (Buster), ARM CPU
  
 ## Author
 
