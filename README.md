@@ -382,6 +382,11 @@ MQTT通信インタフェースでは**データポート右クリックでの�
 ### MQTT通信インタフェース動作確認用 Example RTC の起動スクリプト
 産業技術総合研究所 安藤様から、OpenRTM-aistで用意されているRTコンポーネントのExampleのうち、"SeqIO"と"SimpleIO"、"Slider_and_Motor"の起動スクリプトをご提供いただきました。MQTT通信インタフェースの動作確認を手早く行いたい方向けのスクリプトとなります。sampleフォルダ内に追加しましたのでよろしければお試しください。
 
+なお、"Slider_and_Motor"についてはパッケージ"python3-tk"（Python3系）もしくは"python-tk"（Python2系）が必要になります。script実行前に、以下のようにコマンドラインからパッケージをインストールしてください。また、"Slider_and_Motor"はDesktop環境のみで実行可能です。Server環境を使用されている方はご注意ください。
+```bash
+$ sudo apt install python3-tk
+```
+
 ### 動作確認済みの環境
 * Ubuntu 16.04 x86-64 CPU
 * Ubuntu 18.04 x86-64 CPU
