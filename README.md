@@ -26,10 +26,10 @@ OpenRTM_aist_paho_mqtt_interface
 |
 └--samples
    └--launch_scripts
-   |  | OpenRTM-aistのExample RTC（SeqIO, SimpleIO, Slider_and_Motor）の起動スクリプト
+   |  └--OpenRTM-aistのExample RTC（SeqIO, SimpleIO, Slider_and_Motor）の起動スクリプト
    |
    └--rtc_conf
-      | rtc.confの設定例ファイル群
+      └--rtc.confの設定例ファイル群
 ```
 
 ## Features
