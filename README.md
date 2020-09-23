@@ -9,7 +9,29 @@ OpenRTM-aistを本モジュール群で拡張することで、RTコンポーネ
 ## Target users
 * OpenRTM-aistのユーザでMQTTの初学者が、RTシステムを通してMQTTによる通信システムを試しに体験してみたい方
 * OpenRTM-aistを用いて手軽にインターネット上のシステム、すなわちIoT（Internet of Things）システムやロボットシステムのインターネット化であるIoRT（Internet of Robotic Things）システムを構築したい方
- 
+
+## Directory structure
+リポジトリのフォルダ構成は以下の通り。
+
+```bash
+OpenRTM_aist_paho_mqtt_interface
+|  README.md
+|  CHANGELOG.md
+|
+└--OpenRTM_aist_v121e_paho_mqtt_interface
+|  └--OpenRTM-aist ver.1.2.1以前（Python2系）用のMQTT通信モジュール群
+|
+└--OpenRTM_aist_v122l_paho_mqtt_interface
+|  └--OpenRTM-aist ver.1.2.2以降（Python3系）用のMQTT通信モジュール群
+|
+└--samples
+   └--launch_scripts
+   |  | OpenRTM-aistのExample RTC（SeqIO, SimpleIO, Slider_and_Motor）の起動スクリプト
+   |
+   └--rtc_conf
+      | rtc.confの設定例ファイル群
+```
+
 ## Features
 
 MQTT通信モジュールは以下の4種類で構成されています。
@@ -94,7 +116,7 @@ $ sudo apt install mosquitto
 ```bash
 $ cd ~/
 $ git clone https://github.com/dyubicuoa/OpenRTM_aist_paho_mqtt_interface
-$ cd OpenRTM_aist_paho_mqtt_interface/OpenRTM_aist_v122l_paho_mqtt_module
+$ cd OpenRTM_aist_paho_mqtt_interface/OpenRTM_aist_v122l_paho_mqtt_interface
 $ sudo pip3 install .
 ```
 
@@ -116,7 +138,7 @@ $ sudo apt install mosquitto
 ```bash
 $ cd ~/
 $ git clone https://github.com/dyubicuoa/OpenRTM_aist_paho_mqtt_interface
-$ cd OpenRTM_aist_paho_mqtt_interface/OpenRTM_aist_v121e_paho_mqtt_module
+$ cd OpenRTM_aist_paho_mqtt_interface/OpenRTM_aist_v121e_paho_mqtt_interface
 $ sudo pip install .
 ```
 
