@@ -1,3 +1,8 @@
+## 0.2.2 (September 27, 2020)
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. PublisherおよびPubSecureモジュールに対して、max inflight messagesに関する新たなプロパティを追加
+1. SubSecureモジュールのMinor update
+
 ## 0.2.1 (September 19, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュール
 1. ver.0.2.0で行った修正を同様に適用

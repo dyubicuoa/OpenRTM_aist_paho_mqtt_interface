@@ -57,12 +57,15 @@ class PahoPublisher():
   # @param ptopic Topic group
   # @param pqos Quality of MQTT messaging service
   #
-  def paho_initialize(self, pclientid="", pcleansession=True, ptopic="test", pqos=0):
+  def paho_initialize(self, pclientid="", pcleansession=True, pmaxinflight=20, ptopic="test", pqos=0):
     self.__clientid = pclientid
     self.__cleansession = pcleansession
+    self.__maxinflight = pmaxinflight
     self.__topic = ptopic
     self.__qos = pqos
     self.__pubcl.reinitialise(self.__clientid, self.__cleansession)
+    if self.__qos > 0:
+      self.__pubcl.max_inflight_messages_set(self.__maxinflight)
     self.__pubcl.on_connect = self.on_connect
     self.__pubcl.on_disconnect = self.on_disconnect
 

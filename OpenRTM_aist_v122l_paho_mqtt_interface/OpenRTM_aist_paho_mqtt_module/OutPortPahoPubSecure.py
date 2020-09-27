@@ -162,6 +162,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     PN_CACERT = "cacert"
     PN_CLTCERT = "cltcert"
     PN_CLTKEY = "cltkey"
+    PN_MAXIF = "maxif"
 
     index0 = self.findProp(properties, PN_HOST)
     index1 = self.findProp(properties, PN_PORT)
@@ -173,6 +174,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     index7 = self.findProp(properties, PN_CACERT)
     index8 = self.findProp(properties, PN_CLTCERT)
     index9 = self.findProp(properties, PN_CLTKEY)
+    indexA = self.findProp(properties, PN_MAXIF)
 
     tmp_host = "localhost"
     tmp_port = 8883
@@ -188,6 +190,8 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     tmp_cacert = "./ca.crt"
     tmp_cltcert = "./client.crt"
     tmp_cltkey = "./client.key"
+    tmp_maxif = 20
+    str_maxif = "20"
 
     if index0 < 0:
       print("Server address not found. Default server address '" + tmp_host + "' is used.")
@@ -300,6 +304,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     else:
       try:
         tmp_cacert = any.from_any(properties[index7].value, keep_structs=True)
+        print("Path to CA certificate file: " + tmp_cacert)
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
@@ -307,13 +312,12 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
       self._rtcout.RTC_ERROR("Path to CA certificate file has no string")
       return False
 
-    print("Path to CA certificate file: "+tmp_cacert)
-
     if index8 < 0:
       print("Path to client certificate file not found. Default path '" + tmp_cltcert + "' is used.")
     else:
       try:
         tmp_cltcert = any.from_any(properties[index8].value, keep_structs=True)
+        print("Path to client certificate file: " + tmp_cltcert)
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
@@ -321,13 +325,12 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
       self._rtcout.RTC_ERROR("Path to client certificate file has no string")
       return False
 
-    print("Path to client certificate file: "+tmp_cltcert)
-
     if index9 < 0:
       print("Path to client key file not found. Default path '" + tmp_cltkey + "' is used.")
     else:
       try:
         tmp_cltkey = any.from_any(properties[index9].value, keep_structs=True)
+        print("Path to client key file: " + tmp_cltkey)
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
@@ -335,10 +338,24 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
       self._rtcout.RTC_ERROR("Path to client key file has no string")
       return False
 
-    print("Path to client key file: "+tmp_cltkey)
+    if indexA < 0:
+      print("MaxInflight not found. Default max_inflight '" + str(tmp_maxif) + "' is used.")
+    else:
+      try:
+        str_maxif = any.from_any(properties[indexA].value, keep_structs=True)
+        tmp_maxif = int(str_maxif)
+        if tmp_maxif < 0 or tmp_maxif > 65535:
+          tmp_maxif = 20
+        print("max_inflight: " + str(tmp_maxif))
+      except:
+        self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
+
+    if not str_maxif:
+      self._rtcout.RTC_ERROR("MaxInflight has no string")
+      return False
 
     print("[connecting to MQTT broker start]")
-    PahoPubSecure.paho_initialize(self, tmp_id, tmp_cs, tmp_topic, tmp_qos)
+    PahoPubSecure.paho_initialize(self, tmp_id, tmp_cs, tmp_maxif, tmp_topic, tmp_qos)
     PahoPubSecure.paho_secure_set(self, tmp_cacert, tmp_cltcert, tmp_cltkey)
     PahoPubSecure.paho_connect(self, tmp_host, tmp_port, tmp_kpalv)
     print("[connecting to MQTT broker end]")

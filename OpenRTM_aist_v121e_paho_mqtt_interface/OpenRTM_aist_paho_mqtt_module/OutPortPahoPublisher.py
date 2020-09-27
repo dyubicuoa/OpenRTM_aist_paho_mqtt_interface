@@ -159,6 +159,7 @@ class OutPortPahoPublisher(OpenRTM_aist.InPortConsumer, PahoPublisher):
     PN_QOS = "qos"
     PN_ID = "id"
     PN_CS = "cs"
+    PN_MAXIF = "maxif"
 
     index0 = self.findProp(properties, PN_HOST)
     index1 = self.findProp(properties, PN_PORT)
@@ -167,6 +168,7 @@ class OutPortPahoPublisher(OpenRTM_aist.InPortConsumer, PahoPublisher):
     index4 = self.findProp(properties, PN_QOS)
     index5 = self.findProp(properties, PN_ID)
     index6 = self.findProp(properties, PN_CS)
+    index7 = self.findProp(properties, PN_MAXIF)
 
     tmp_host = "localhost"
     tmp_port = 1883
@@ -179,6 +181,8 @@ class OutPortPahoPublisher(OpenRTM_aist.InPortConsumer, PahoPublisher):
     tmp_id = ""
     tmp_cs = True
     str_cs = "True"
+    tmp_maxif = 20
+    str_maxif = "20"
 
     if index0 < 0:
       print("Server address not found. Default server address '" + tmp_host + "' is used.")
@@ -278,8 +282,24 @@ class OutPortPahoPublisher(OpenRTM_aist.InPortConsumer, PahoPublisher):
       self._rtcout.RTC_ERROR("Clean session has no string")
       return False
 
+    if index7 < 0:
+      print("MaxInflight not found. Default max_inflight '" + str(tmp_maxif) + "' is used.")
+    else:
+      try:
+        str_maxif = any.from_any(properties[index7].value, keep_structs=True)
+        tmp_maxif = int(str_maxif)
+        if tmp_maxif < 0 or tmp_maxif > 65535:
+          tmp_maxif = 20
+        print("max_inflight: " + str(tmp_maxif))
+      except:
+        self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
+
+    if not str_maxif:
+      self._rtcout.RTC_ERROR("MaxInflight has no string")
+      return False
+
     print("[connecting to MQTT broker start]")
-    PahoPublisher.paho_initialize(self, tmp_id, tmp_cs, tmp_topic, tmp_qos)
+    PahoPublisher.paho_initialize(self, tmp_id, tmp_cs, tmp_maxif, tmp_topic, tmp_qos)
     PahoPublisher.paho_connect(self, tmp_host, tmp_port, tmp_kpalv)
     print("[connecting to MQTT broker end]")
 

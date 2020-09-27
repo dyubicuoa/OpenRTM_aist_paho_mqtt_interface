@@ -366,6 +366,7 @@ class InPortPahoSubSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
     else:
       try:
         tmp_cacert = any.from_any(properties[index7].value, keep_structs=True)
+        print("Path to CA certificate file: " + tmp_cacert)
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
@@ -373,13 +374,12 @@ class InPortPahoSubSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
       self._rtcout.RTC_ERROR("Path to CA certificate file has no string")
       return False
 
-    print("Path to CA certificate file: "+tmp_cacert)
-
     if index8 < 0:
       print("Path to client certificate file not found. Default path '" + tmp_cltcert + "' is used.")
     else:
       try:
         tmp_cltcert = any.from_any(properties[index8].value, keep_structs=True)
+        print("Path to client certificate file: " + tmp_cltcert)
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
@@ -387,21 +387,18 @@ class InPortPahoSubSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
       self._rtcout.RTC_ERROR("Path to client certificate file has no string")
       return False
 
-    print("Path to client certificate file: "+tmp_cltcert)
-
     if index9 < 0:
       print("Path to client key file not found. Default path '" + tmp_cltkey + "' is used.")
     else:
       try:
         tmp_cltkey = any.from_any(properties[index9].value, keep_structs=True)
+        print("Path to client key file: " + tmp_cltkey)
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
     if not tmp_cltkey:
       self._rtcout.RTC_ERROR("Path to client key file has no string")
       return False
-
-    print("Path to client key file: "+tmp_cltkey)
 
     print("[connecting to MQTT broker start]")
     PahoSubSecure.paho_initialize(self, tmp_id, tmp_cs, tmp_topic, tmp_qos)
