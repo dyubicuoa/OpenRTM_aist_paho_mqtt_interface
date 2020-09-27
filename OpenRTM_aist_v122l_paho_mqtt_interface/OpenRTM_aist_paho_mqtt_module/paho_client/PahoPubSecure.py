@@ -53,6 +53,7 @@ class PahoPubSecure():
   # @brief Initialize paho client
   # @param pclientid Client ID
   # @param pcleansession Whether to keep the session information
+  # @param pmaxinflight Number of messages to be able to transmit at once
   # @param ptopic Topic group
   # @param pqos Quality of MQTT messaging service
   #
