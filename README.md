@@ -261,6 +261,7 @@ Topic: hoge
 QoS not found. Default QoS '0' is used.
 Client ID not found. Random number ID is used.
 CleanSession not found. Default clean_session 'True' is used.
+MaxInflight not found. Default max_inflight '20' is used.
 [connecting to MQTT broker start]
 connected to broker.
 [connecting to MQTT broker end]
