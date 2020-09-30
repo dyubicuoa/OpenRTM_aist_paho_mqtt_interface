@@ -191,7 +191,7 @@ $ sudo systemctl status mosquitto.service
 ### プロパティの事前設定とMQTT Brokerへの自動接続によりRTシステムを構築する手順
 
 #### (1) rtc.confでのモジュール指定とプロパティ設定
-MQTT通信モジュールをOpenRTM-aistに動的に組み込むには、MQTTで通信を行いたいRTコンポーネントのrtc.confにおいて、MQTT通信モジュールへのpathとモジュール名を指定する必要があります。OutPortはデータを送信する側なので、OutPortPahoPublisherもしくはOutPortPahoPubSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、OutPortPahoSubscriberもしくはOutPortPahoSubSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
+MQTT通信モジュールをOpenRTM-aistに動的に組み込むには、MQTTで通信を行いたいRTコンポーネントのrtc.confにおいて、"**manager.modules.load_path:**"にてMQTT通信モジュールへのpathを、"**manager.modules.preload:**"にてモジュール名を指定する必要があります。OutPortはデータを送信する側なので、OutPortPahoPublisherもしくはOutPortPahoPubSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、OutPortPahoSubscriberもしくはOutPortPahoSubSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
 
 続いて、プロパティの設定です。モジュールのプロパティをrtc.confで事前に設定し、RTコンポーネントの実行と同時に対象のデータポートをMQTT Brokerに自動的に接続するには"**manager.components.preconnect:**"指定を利用します。preconnectによるMQTT通信インタフェースや関連するプロパティ等の設定方法は以下の通りです。
 ```bash
@@ -295,7 +295,7 @@ BrokerはRTSystemEditor上では表示されません。しかし、OutPortとIn
 ### RTSystemEditor上でのマニュアル操作によりRTシステムを構築する手順
 
 #### (1) rtc.confでのモジュール指定
-MQTT通信モジュールをOpenRTM-aistに動的に組み込むには、MQTTで通信を行いたいRTコンポーネントのrtc.confにおいて、MQTT通信モジュールへのpathとモジュール名を指定する必要があります。OutPortはデータを送信する側なので、OutPortPahoPublisherもしくはOutPortPahoPubSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、OutPortPahoSubscriberもしくはOutPortPahoSubSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
+MQTT通信モジュールをOpenRTM-aistに動的に組み込むには、MQTTで通信を行いたいRTコンポーネントのrtc.confにおいて、"**manager.modules.load_path:**"にてMQTT通信モジュールへのpathを、"**manager.modules.preload:**"にてモジュール名を指定する必要があります。OutPortはデータを送信する側なので、OutPortPahoPublisherもしくはOutPortPahoPubSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、OutPortPahoSubscriberもしくはOutPortPahoSubSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
 
 例えば、セキュア通信機能なしのMQTT通信インタフェースを用いてOutPortからデータを送信したい場合は以下のようにrtc.confに記述します。
 ```bash
