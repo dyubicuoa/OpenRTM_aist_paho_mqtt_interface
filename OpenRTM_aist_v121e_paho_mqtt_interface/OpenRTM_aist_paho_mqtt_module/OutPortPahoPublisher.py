@@ -153,7 +153,7 @@ class OutPortPahoPublisher(OpenRTM_aist.InPortConsumer, PahoPublisher):
     self._rtcout.RTC_TRACE("subscribePahoPublisher()")
     
     PN_HOST = "host"
-    PN_PORT = "port"
+    PN_PORT = "msport"
     PN_KPALV = "kpalv"
     PN_TOPIC = "topic"
     PN_QOS = "qos"

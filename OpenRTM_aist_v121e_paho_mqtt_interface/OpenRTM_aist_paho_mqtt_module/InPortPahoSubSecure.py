@@ -215,7 +215,7 @@ class InPortPahoSubSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
     self._rtcout.RTC_TRACE("subscribePahoSubSecure()")
 
     PN_HOST = "host"
-    PN_PORT = "port"
+    PN_PORT = "msport"
     PN_KPALV = "kpalv"
     PN_TOPIC = "topic"
     PN_QOS = "qos"

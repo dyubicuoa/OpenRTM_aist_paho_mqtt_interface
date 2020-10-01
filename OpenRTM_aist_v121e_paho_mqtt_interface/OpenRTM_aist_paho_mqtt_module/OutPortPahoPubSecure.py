@@ -153,7 +153,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     self._rtcout.RTC_TRACE("subscribePahoPubSecure()")
     
     PN_HOST = "host"
-    PN_PORT = "port"
+    PN_PORT = "msport"
     PN_KPALV = "kpalv"
     PN_TOPIC = "topic"
     PN_QOS = "qos"
