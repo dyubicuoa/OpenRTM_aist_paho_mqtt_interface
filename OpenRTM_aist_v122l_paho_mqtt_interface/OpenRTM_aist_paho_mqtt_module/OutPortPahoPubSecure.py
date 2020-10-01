@@ -198,6 +198,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     else:
       try:
         tmp_host = any.from_any(properties[index0].value, keep_structs=True)
+        print("Server address: " + tmp_host)
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
@@ -205,13 +206,15 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
       self._rtcout.RTC_ERROR("Server address has no string")
       return False
 
-    print("Server address: "+tmp_host)
-
     if index1 < 0:
       print("Port number not found. Default port '" + str(tmp_port) + "' is used.")
     else:
       try:
         str_port = any.from_any(properties[index1].value, keep_structs=True)
+        tmp_port = int(str_port)
+        if tmp_port < 0 or tmp_port > 65535:
+          tmp_port = 8883
+        print("Port: " + str(tmp_port))
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
@@ -219,17 +222,15 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
       self._rtcout.RTC_ERROR("Port number has no string")
       return False
 
-    tmp_port = int(str_port)
-    if tmp_port < 0 or tmp_port > 65535:
-      tmp_port = 8883
-
-    print("Port: "+str(tmp_port))
-
     if index2 < 0:
       print("Keepalive not found. Default keepalve '" + str(tmp_kpalv) + "' is used.")
     else:
       try:
         str_kpalv = any.from_any(properties[index2].value, keep_structs=True)
+        tmp_kpalv = int(str_kpalv)
+        if tmp_kpalv < 0 or tmp_kpalv > 86400:
+          tmp_kpalv = 60
+        print("keepalive: " + str(tmp_kpalv))
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
@@ -237,17 +238,12 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
       self._rtcout.RTC_ERROR("Keepalive has no string")
       return False
 
-    tmp_kpalv = int(str_kpalv)
-    if tmp_kpalv < 0 or tmp_kpalv > 86400:
-      tmp_kpalv = 60
-
-    print("keepalive: "+str(tmp_kpalv))
-
     if index3 < 0:
       print("Topic not found. Default Topic '" + tmp_topic + "' is used.")
     else:
       try:
         tmp_topic = any.from_any(properties[index3].value, keep_structs=True)
+        print("Topic: " + tmp_topic)
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
@@ -255,25 +251,21 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
       self._rtcout.RTC_ERROR("Topic has no string")
       return False
 
-    print("Topic: "+tmp_topic)
-
     if index4 < 0:
       print("QoS not found. Default QoS '" + str(tmp_qos) + "' is used.")
     else:
       try:
         str_qos = any.from_any(properties[index4].value, keep_structs=True)
+        tmp_qos = int(str_qos)
+        if tmp_qos < 0 or tmp_qos > 2:
+          tmp_qos = 0
+        print("QoS: " + str(tmp_qos))
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
     if not str_qos:
       self._rtcout.RTC_ERROR("QoS has no string")
       return False
-
-    tmp_qos = int(str_qos)
-    if tmp_qos < 0 or tmp_qos > 2:
-      tmp_qos = 0
-
-    print("QoS: "+str(tmp_qos))
 
     if index5 < 0:
       print("Client ID not found. Random number ID is used.")

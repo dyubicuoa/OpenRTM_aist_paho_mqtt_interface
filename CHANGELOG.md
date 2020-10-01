@@ -1,3 +1,7 @@
+## 0.2.4 (October 1, 2020)
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. PubSecureおよびSubSecureモジュールのrtc.confに入力したプロパティを読み込めないエラーを修正
+
 ## 0.2.3 (October 1, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
 1. PubSecureおよびSubSecureモジュールのMinor correction
