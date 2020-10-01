@@ -63,7 +63,7 @@ class PahoPubSecure():
     self.__maxinflight = pmaxinflight
     self.__topic = ptopic
     self.__qos = pqos
-    self.__pubcl.reinitialize(self.__clientid, self.__cleansession)
+    self.__pubcl.reinitialise(self.__clientid, self.__cleansession)
     if self.__qos > 0:
       self.__pubcl.max_inflight_messages_set(self.__maxinflight)
     self.__pubcl.on_connect = self.on_connect

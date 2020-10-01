@@ -74,7 +74,7 @@ class PahoSubSecure():
     self.__cleansession = pcleansession
     self.__topic = ptopic
     self.__qos = pqos
-    self.__subcl.reinitialize(self.__clientid, self.__cleansession)
+    self.__subcl.reinitialise(self.__clientid, self.__cleansession)
     self.__subcl.on_connect = self.on_connect
     self.__subcl.on_disconnect = self.on_disconnect
     self.__subcl.on_subscribe = self.on_subscribe
