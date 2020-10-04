@@ -17,6 +17,7 @@ OpenRTM-aistを本モジュール群で拡張することで、RTコンポーネ
 OpenRTM_aist_paho_mqtt_interface
 |  README.md
 |  CHANGELOG.md
+|  LICENSE
 |
 └--OpenRTM_aist_v121e_paho_mqtt_interface
 |  └--OpenRTM-aist ver.1.2.1以前（Python2系）用のMQTT通信モジュール群
