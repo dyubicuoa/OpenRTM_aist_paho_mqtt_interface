@@ -35,7 +35,7 @@ OpenRTM_aist_paho_mqtt_interface
 
 ## Features
 
-MQTT通信モジュールは以下の4種類で構成されています。
+MQTT通信モジュールは以下の4種類で構成されています。なお、通信モジュールにおけるInterface Typeとは、ロボットシステムを構成するRTコンポーネントのデータポート上で認識される通信インタフェース名を示しています。OpenRTM-aistにおけるInterface Typeのdefaultは'corba_cdr'ですが、下記MQTT用の通信インタフェース名を選択することで、データポートの通信をCORBAからMQTTに変えることが可能となります。
 
 || MQTT通信モジュール名 | Interface Type | 説明 |
 | :-- | :-- | :-- | :-- |
