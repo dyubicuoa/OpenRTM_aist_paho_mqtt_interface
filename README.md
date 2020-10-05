@@ -58,7 +58,7 @@ MQTT通信モジュールは以下の4種類で構成されています。
 | 5. | qos | 0 | メッセージング品質。MQTTでは0, 1, 2の何れかから選択する。数字が大きいほど高品質だが処理的に重くなる |
 | 6. | id | None | クライアントID。Brokerに対してuniqueな値でなければいけない。defaultでは乱数により値が与えられる |
 | 7. | cs | True | Clean Session。クライアントの接続が切れた場合に、Brokerで接続時のSession情報を残しておくか否か |
-| 8. | maxif | 20 | Max inflight messages。サーバのACKを待たずに同時発信可能なメッセージの数。値が高ければメッセージングのスループットは向上するが、その分メモリ消費量が大きくなる。OutPortPahoPublisherモジュールでQoS>0の場合のみ有効。 |
+| 8. | maxif | 20 | Max inflight messages。サーバのACKを待たずに同時発信可能なメッセージの数。値が高ければメッセージングのスループットは向上するが、その分メモリ消費量が大きくなる。OutPortPahoPublisherモジュールでQoS>0の場合のみ有効 |
 
 **(3) OutPortPahoPubSecure** および **(4) InPortPahoSubSecure**  
 ||Name (Key)|Default value| 説明 |
@@ -73,7 +73,7 @@ MQTT通信モジュールは以下の4種類で構成されています。
 | 8. | cacert | './ca.crt' | 認証局（Certificate Authority）証明書へのpath。絶対パスと相対パスいずれでも指定可能。サーバの真正性を証明するのに必要 |
 | 9. | cltcert | './client.crt' | クライアント証明書へのpath。絶対パスと相対パスいずれでも指定可能。クライアントの真正性を証明するのに必要 |
 | 10. | cltkey | './client.key' | クライアント秘密鍵へのpath。絶対パスと相対パスいずれでも指定可能。クライアントの真正性を証明するのに必要 |
-| 11. | maxif | 20 | Max inflight messages。サーバのACKを待たずに同時発信可能なメッセージの数。値が高ければメッセージングのスループットは向上するが、その分メモリ消費量が大きくなる。OutPortPahoPubSecureモジュールでQoS>0の場合のみ有効。 |
+| 11. | maxif | 20 | Max inflight messages。サーバのACKを待たずに同時発信可能なメッセージの数。値が高ければメッセージングのスループットは向上するが、その分メモリ消費量が大きくなる。OutPortPahoPubSecureモジュールでQoS>0の場合のみ有効 |
 
 プロパティはOpenRTM-aist ver.1.2.0以降であれば、RTコンポーネントの実行前に、rtc.confにて事前設定可能です。このrtc.confを"-f"でオプション指定し、RTコンポーネントを実行することでMQTT Brokerへの接続が完了した状態へと遷移します。なお、Keyは必ずしも上記の順番で入力する必要はありません。いくつかのKeyを選択し、順不同で入力することができます。
 ```bash
