@@ -147,7 +147,7 @@ $ sudo pip install .
 
 ## Usage
 
-以下では、Linux（Ubuntu or Debian）の環境下において、OpenRTM-aist上のMQTT通信インタフェースを利用してロボットシステムを構築する手順を2通り示します。一つめは**MQTT通信モジュールに関連するプロパティをrtc.confで事前に設定し、RTコンポーネント実行時にデータポートをMQTT Brokerに自動接続する方法**です。もう一つは**RTコンポーネント実行後にRTSystemEditorを用い、モジュールのプロパティを直接入力し、マニュアルでBrokerに接続する方法**となります。前者はOpenRTM-aist ver.1.2.0以降で追加された新機能用いるため、ver.1.2.0以降のユーザ用、後者はver.1.2.0より前のバージョンのOpenRTM-aistユーザ、もしくはRTSystemEditor上でマニュアル操作によりロボットシステムを一から構築したいユーザ用です。操作上は、前者がrtc.confからモジュールに対してプロパティを渡せることから、ロボットシステムの構築作業が格段に簡易化されます。ですので、通常は前者の構築手順を選択することになります。  
+以下では、Linux（Ubuntu or Debian）の環境下において、OpenRTM-aist上のMQTT通信インタフェースを利用してロボットシステムを構築する手順を2通り示します。一つめは**『MQTT通信モジュールに関連するプロパティをrtc.confで事前に設定し、RTコンポーネント実行時にデータポートをMQTT Brokerに自動接続する方法』**です。もう一つは**『RTコンポーネント実行後にRTSystemEditorを用い、モジュールのプロパティを直接入力し、マニュアルでBrokerに接続する方法』**となります。前者はOpenRTM-aist ver.1.2.0以降で追加された新機能用いるため、ver.1.2.0以降のユーザ用、後者はver.1.2.0より前のバージョンのOpenRTM-aistユーザ、もしくはRTSystemEditor上でマニュアル操作によりロボットシステムを一から構築したいユーザ用です。操作上は、前者がrtc.confからモジュールに対してプロパティを渡せることから、ロボットシステムの構築作業が格段に簡易化されます。ですので、通常は前者の構築手順を選択することになります。  
 
 なお、構築例で使用するのはOpenRTM-aistで予めexampleとして用意されているConsoleInとConsoleOutの各コンポーネントですが、当然ながらエンドユーザが独自に開発したRTコンポーネントにも応用可能です。
 
@@ -189,7 +189,7 @@ $ sudo systemctl status mosquitto.service
 ：
 ```
 
-### プロパティの事前設定とMQTT Brokerへの自動接続によりRTシステムを構築する手順
+### 『プロパティの事前設定とMQTT Brokerへの自動接続によりRTシステムを構築する手順』
 
 #### (1) rtc.confでのモジュール指定とプロパティ設定
 MQTT通信モジュールをOpenRTM-aistに動的に組み込むには、MQTTで通信を行いたいRTコンポーネントのrtc.confにおいて、"**manager.modules.load_path:**"にてMQTT通信モジュールへのpathを、"**manager.modules.preload:**"にてモジュール名を指定する必要があります。OutPortはデータを送信する側なので、OutPortPahoPublisherもしくはOutPortPahoPubSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、OutPortPahoSubscriberもしくはOutPortPahoSubSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
@@ -293,7 +293,7 @@ Subscription started: 1 (0,)
 
 BrokerはRTSystemEditor上では表示されません。しかし、OutPortとInPortの各データポートが緑色になっていれば、Brokerへの接続が完了していることを示しています。後は通常通り、RTSystemEditorかRTShellでConsoleInをActivate化すればRTシステムが稼働します。Deactivate化も同様にRTSystemEditorかRTShellから実行可能です。
 
-### RTSystemEditor上でのマニュアル操作によりRTシステムを構築する手順
+### 『RTSystemEditor上でのマニュアル操作によりRTシステムを構築する手順』
 
 #### (1) rtc.confでのモジュール指定
 MQTT通信モジュールをOpenRTM-aistに動的に組み込むには、MQTTで通信を行いたいRTコンポーネントのrtc.confにおいて、"**manager.modules.load_path:**"にてMQTT通信モジュールへのpathを、"**manager.modules.preload:**"にてモジュール名を指定する必要があります。OutPortはデータを送信する側なので、OutPortPahoPublisherもしくはOutPortPahoPubSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、OutPortPahoSubscriberもしくはOutPortPahoSubSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
