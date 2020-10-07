@@ -57,7 +57,7 @@ MQTT通信モジュールは以下の4種類で構成されています。なお
 | 4. | topic | 'test' | メッセージンググループ名。メッセージの送受信を行うクライアントは同一のTopicに属していなければいけない |
 | 5. | qos | 0 | メッセージング品質。MQTTでは0, 1, 2の何れかから選択する。数字が大きいほど高品質だが処理的に重くなる |
 | 6. | id | None | クライアントID。Brokerに対してuniqueな値でなければいけない。defaultでは乱数により値が与えられる |
-| 7. | cs | True | Clean Session。クライアントの接続が切れた場合に、Brokerで接続時のSession情報を残しておくか否か。FalseかつQoS>0の場合、Client側ネットワーク障害発生時にBroker側でサブスクリプションおよびメッセージが保存され、Subscriberが永続化する |
+| 7. | cs | True | Clean Session。クライアントの接続が切れた場合に、Brokerで接続時のSession情報を残しておくか否か。FalseかつQoS>0の場合、クライアント側ネットワーク障害発生時にBroker側でサブスクリプションおよびメッセージが保存され、Subscriberが永続化する |
 | 8. | maxif | 20 | Max inflight messages。サーバのACKを待たずに同時発信可能なメッセージの数。値が高ければメッセージングのスループットは向上するが、その分メモリ消費量が大きくなる。OutPortPahoPublisherモジュールでQoS>0の場合のみ有効 |
 
 **(3) OutPortPahoPubSecure** および **(4) InPortPahoSubSecure**  
@@ -69,7 +69,7 @@ MQTT通信モジュールは以下の4種類で構成されています。なお
 | 4. | topic | 'test' | メッセージンググループ名。メッセージの送受信を行うクライアントは同一のTopicに属していなければいけない |
 | 5. | qos | 0 | メッセージング品質。MQTTでは0, 1, 2の何れかから選択する。数字が大きいほど高品質だが処理的に重くなる |
 | 6. | id | None | クライアントID。Brokerに対してuniqueな値でなければいけない。defaultでは乱数により値が与えられる |
-| 7. | cs | True | Clean Session。クライアントの接続が切れた場合に、Brokerで接続時のSession情報を残しておくか否か。FalseかつQoS>0の場合、Client側ネットワーク障害発生時にBroker側でサブスクリプションおよびメッセージが保存され、Subscriberが永続化する |
+| 7. | cs | True | Clean Session。クライアントの接続が切れた場合に、Brokerで接続時のSession情報を残しておくか否か。FalseかつQoS>0の場合、クライアント側ネットワーク障害発生時にBroker側でサブスクリプションおよびメッセージが保存され、Subscriberが永続化する |
 | 8. | cacert | './ca.crt' | 認証局（Certificate Authority）証明書へのpath。絶対パスと相対パスいずれでも指定可能。サーバの真正性を証明するのに必要 |
 | 9. | cltcert | './client.crt' | クライアント証明書へのpath。絶対パスと相対パスいずれでも指定可能。クライアントの真正性を証明するのに必要 |
 | 10. | cltkey | './client.key' | クライアント秘密鍵へのpath。絶対パスと相対パスいずれでも指定可能。クライアントの真正性を証明するのに必要 |
