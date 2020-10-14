@@ -2,7 +2,11 @@
 
 本ソフトウェアはロボットミドルウェアの一つであるRTミドルウェアで構築されたロボットシステムにおいて、**MQTT（Message Queuing Telemetry Transport）プロトコル**による通信を実現する産業技術総合研究所開発のOpenRTM-aist Python用拡張モジュール群です。  
 
-OpenRTM-aistを本モジュール群で拡張することで、RTコンポーネントのデータポートのInterface TypeにMQTTを追加することができます。Interface TypeとしてMQTTを選択することでデータポート間の通信をMQTTで行えるようになります。  
+OpenRTM-aistを本モジュール群で拡張することで、RTコンポーネントのデータポートのInterface TypeにMQTTを追加することができます。通常OpenRTM-aistではInterface TypeとしてCORBAが利用されますが、通信インタフェースとして追加されたMQTTを選択することでデータポート間の通信をMQTTで行えるようになります。
+
+つまり、OpenRTM-aistのユーザは、これまでと同様にRTコンポーネントを開発、実行し、RTSystemEditor等でRTシステムを構築する感覚で、RTミドルウェアによるIoTシステムを構築できるのです。MQTT通信インタフェースを利用するのに必要な過程は、rtc.confやRTSystemEditorにてMQTT通信モジュールや関連するプロパティを指定するだけです。
+
+いままでのRTシステム構築作業にひと手間加えるだけで、IoTシステム構築ミドルウェアとしてのOpenRTM-aistに触れることができます。
 
 <img src="https://user-images.githubusercontent.com/40682353/93169044-36b4e500-f75f-11ea-9bce-aa67e1d98ec4.png" width=70%>
 
