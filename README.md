@@ -4,9 +4,9 @@
 
 OpenRTM-aistを本モジュール群で拡張することで、RTコンポーネントのデータポートのInterface TypeにMQTTを追加することができます。通常OpenRTM-aistではInterface TypeとしてCORBAが利用されますが、通信インタフェースとして追加されたMQTTを選択することでデータポート間の通信をMQTTで行えるようになります。
 
-つまり、OpenRTM-aistのユーザは、これまでと同様にRTコンポーネントを開発、実行し、RTSystemEditor等でRTシステムを構築する感覚で、RTミドルウェアによるIoTシステムを構築できるのです。MQTT通信インタフェースを利用するのに必要な過程は、rtc.confやRTSystemEditorにてMQTT通信モジュールや関連するプロパティを指定するだけです。
+つまり、OpenRTM-aistのユーザは、これまでと同様にRTコンポーネントを開発、実行し、RTSystemEditor等でRTシステムを構築する感覚で、IoTシステムを構築できるのです。MQTT通信インタフェースを利用するのに必要な過程は、rtc.confやRTSystemEditorにてMQTT通信モジュールや関連するプロパティを指定するだけです。
 
-いままでのRTシステム構築作業にひと手間加えるだけで、IoTシステム構築ミドルウェアとしてのOpenRTM-aistに触れることができます。
+今までのRTシステム構築作業にひと手間加えて、IoTシステム構築ミドルウェアとしてのOpenRTM-aistに触れてみてください。
 
 <img src="https://user-images.githubusercontent.com/40682353/93169044-36b4e500-f75f-11ea-9bce-aa67e1d98ec4.png" width=70%>
 
