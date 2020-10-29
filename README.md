@@ -243,7 +243,7 @@ manager.components.preconnect: ConsoleOut0.in?interface_type=paho_mqtt&qos=1&top
 manager.modules.load_path: /usr/local/lib/python3.6/dist-packages/OpenRTM_aist_paho_mqtt_module
 # MQTT通信モジュール名
 manager.modules.preload: OutPortPahoPubSecure.py, InPortPahoSubSecure.py
-# MQTT BrokerへのInPortの自動接続
+# MQTT Brokerへの2つのデータポート（OutPortとInPort）の自動接続
 manager.components.preconnect: \
 PahoMqttTest0.out?interface_type=paho_mqtts&cacert=./tls/ca.crt&cltcert=./tls/clt.crt&cltkey=./tls/clt.key, \
 PahoMqttTest0.in?interface_type=paho_mqtts&cacert=./tls/ca.crt&cltcert=./tls/clt.crt&cltkey=./tls/clt.key
