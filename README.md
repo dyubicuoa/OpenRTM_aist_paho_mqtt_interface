@@ -392,7 +392,25 @@ RTSystemEditorからの直接操作により、MQTT通信インタフェース�
 
 なお、起動スクリプトの実行には、実行するローカルマシン内で稼働する何らかのMQTT Brokerが必要となります。起動スクリプトの実行前に、Eclipse Mosquitto等OSSのBrokerを予めインストールし起動しておいてください。
 
-また、"Slider_and_Motor"についてはパッケージ"python3-tk"（Python3系）もしくは"python-tk"（Python2系）が必要になります。script実行前に、コマンドラインから`sudo apt install python3-tk`または`sudo apt install python-tk`により、該当のパッケージをインストールしてください。これに加えて、"Slider_and_Motor"はDesktop環境のみで実行可能となります。Server環境やDocker等のContainer環境を使用されている方はご注意ください。
+また、"Slider_and_Motor"についてはパッケージ"python3-tk"（Python3系）もしくは"python-tk"（Python2系）が必要になります。script実行前に、コマンドラインから`sudo apt install python3-tk`または`sudo apt install python-tk`により、該当のパッケージをインストールしてください。これに加えて、"Slider_and_Motor"の実行可能な環境はDesktopのみとなります。Server環境やDocker等のContainer環境を使用されている方はご注意ください。
+
+### AWS IoT Core への接続について
+セキュア通信機能付きMQTT通信モジュール（OutPortPahoPubSecureまたはInPortPahoSubSecure）を用いれば、IoTプラットフォームの AWS IoT Core を中継地点（Broker）としたデータポート間のデータ送受信が可能です。AWSにてThing設定時に得られた情報をもとに、IoT Core へ接続したいRTコンポーネントのrtc.confを以下のように書き換えてください。以下の事例はOutPortを Iot Core に接続するケースとなります。
+```bash
+# rtc.conf example to connect to AWS IoT Core
+：
+# MQTT通信モジュールへのpath
+manager.modules.load_path: /usr/local/lib/python3.6/dist-packages/OpenRTM_aist_paho_mqtt_module
+# MQTT通信モジュール名
+manager.modules.preload: OutPortPahoPubSecure.py
+# AWS IoT CoreへのOutPortの自動接続
+manager.components.preconnect: \
+PahoMqttTest0.out?interface_type=paho_mqtts&host={AWSから割り当てられたエンドポイント}&cacert={AWSで発行されたルート認証局証明書へのpath}&cltcert={AWSで発行されたクライアント証明書へのpath}&cltkey={AWSで発行されたクライアント秘密鍵へのpath}
+```
+
+なお、AWS IoT Core では、Topicは利用者側で自由に設定できますが、QoSは0または1のみが有効です。QoS=2は選択できませんのでご注意ください。
+
+また、MQTT通信モジュールの現行バージョンでは、IoT Coreを介したデータポート間のPublish/Subscribeのみに対応しています。AWS側とはメッセージ中のpayloadのデータ形式やシリアライズ形式が異なるため、Amazon Lambda等他のAWSクラウドサービスとの連携は今のところできません。
 
 ### 動作確認済みの環境
 * Ubuntu 16.04, x86-64 CPU
