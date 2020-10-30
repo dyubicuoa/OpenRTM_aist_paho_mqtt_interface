@@ -410,7 +410,7 @@ PahoMqttTest0.out?interface_type=paho_mqtts&host={AWSから割り当てられた
 
 なお、AWS IoT Core では、Topicは利用者側で自由に設定できますが、QoSは0または1のみが有効です。QoS=2は選択できませんのでご注意ください。
 
-また、MQTT通信モジュールの現行バージョンでは、IoT Coreを介したデータポート間のPublish/Subscribeのみに対応しています。AWS側とはメッセージ中のpayloadのデータ形式やシリアライズ形式が異なるため、Amazon Lambda等他のAWSクラウドサービスとの連携は今のところできません。
+また、MQTT通信モジュールの現行バージョンでは、IoT Coreを介したデータポート間のPublish/Subscribeのみに対応しています。AWS側とはメッセージ中のpayloadのデータ形式やシリアライズ形式が異なるため、Amazon LambdaやAmazon Kinesis等他のAWSクラウドサービスとの連携は今のところできません。
 
 ### 動作確認済みの環境
 * Ubuntu 16.04, x86-64 CPU
