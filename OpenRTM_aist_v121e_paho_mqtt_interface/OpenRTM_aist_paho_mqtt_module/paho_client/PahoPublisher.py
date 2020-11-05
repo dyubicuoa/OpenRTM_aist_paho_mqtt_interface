@@ -4,7 +4,7 @@
 ##
 # @file   PahoPublisher.py
 # @brief  PahoPublisher class
-# @date   2020/09/07
+# @date   2020/11/04
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -19,7 +19,7 @@ import paho.mqtt.client as mqtt
 # @class PahoPublisher
 # @brief PahoPublisher class
 #
-class PahoPublisher():
+class PahoPublisher:
 
   ##
   # @brief Constructor
@@ -96,7 +96,14 @@ class PahoPublisher():
   #
   def paho_pub(self, pdata):
     self.__pubcl.publish(self.__topic, pdata, self.__qos)
-    
+
+  ##
+  # @brief Get MQTT client
+  # @return __pubcl MQTT client instance
+  # 
+  def get_client(self):
+    return self.__pubcl
+
 if __name__ == '__main__':
 
     pahop = PahoPublisher()

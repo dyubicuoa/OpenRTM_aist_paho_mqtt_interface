@@ -4,7 +4,7 @@
 ##
 # @file   PahoSubscriber.py
 # @brief  PahoSubscriber class
-# @date   2020/09/07
+# @date   2020/11/04
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -19,7 +19,7 @@ import paho.mqtt.client as mqtt
 # @class PahoSubscriber
 # @brief PahoSubscriber class
 #
-class PahoSubscriber():
+class PahoSubscriber:
 
   ##
   # @brief Constructor
@@ -108,6 +108,13 @@ class PahoSubscriber():
   #
   def set_on_message(self, func):
     self.__subcl.on_message = func
+
+  ##
+  # @brief Get MQTT client
+  # @return __subcl MQTT client instance
+  # 
+  def get_client(self):
+    return self.__subcl
 
 if __name__ == '__main__':
 

@@ -4,7 +4,7 @@
 ##
 # @file   InPortPahoSubscriber.py
 # @brief  InPortPahoSubscriber class
-# @date   2020/09/15
+# @date   2020/11/04
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -22,7 +22,7 @@ import os
 import time
 import threading
 import sys
-import OpenRTM_aist_paho_mqtt_module.paho_client.PahoSubscriber as PahoSubscriber
+from OpenRTM_aist_paho_mqtt_module.paho_client.PahoSubscriber import PahoSubscriber
 
 # There was a Ctrl+C interruption or not
 stop = False

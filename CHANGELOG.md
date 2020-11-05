@@ -1,3 +1,8 @@
+## 0.3.0 (November 5, 2020)
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. MQTT Clientモジュールのうち、セキュア通信機能付きモジュール（PahoPubSecureまたはPahoSubSecure）をセキュア通信機能なしモジュール（PahoPublisherまたはPahoSubscriber）から継承するように修正
+1. __init__ファイルの修正と、これに伴う各モジュールの修正
+
 ## 0.2.5 (October 1, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
 1. 全モジュールにおけるプロパティname（key）"port"を"msport"に変更
