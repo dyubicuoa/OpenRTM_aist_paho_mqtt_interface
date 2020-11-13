@@ -12,7 +12,7 @@ packages = [
 
 setup(
   name='OpenRTM_aist_paho_mqtt_module',
-  version='0.3.0',
+  version='0.4.0',
   description='MQTT interface modules on OpenRTM-aist',
   author='Daishi Yoshino',
   author_email = 'daishi-y@u-aizu.ac.jp',

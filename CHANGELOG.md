@@ -1,6 +1,12 @@
+## 0.4.0 (November 12, 2020)
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. OutPortPahoPublisherおよびOutPortPahoPubSecureモジュールに対して、MQTTプロトコル ver.3.1.1中の'Retain'と'Will'2つの機能を実装
+1. 1.に伴い、MQTTクライアントモジュールであるPahoPublisherとPahoPubSecureの機能更新
+1. その他全モジュールのMinor correction
+
 ## 0.3.0 (November 5, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
-1. MQTT Clientモジュールのうち、セキュア通信機能付きモジュール（PahoPubSecureまたはPahoSubSecure）をセキュア通信機能なしモジュール（PahoPublisherまたはPahoSubscriber）から継承するように修正
+1. MQTTクライアントモジュールのうち、セキュア通信機能付きモジュール（PahoPubSecureまたはPahoSubSecure）をセキュア通信機能なしモジュール（PahoPublisherまたはPahoSubscriber）から継承するように修正
 1. __init__ファイルの修正と、これに伴う各モジュールの修正
 
 ## 0.2.5 (October 1, 2020)
@@ -9,16 +15,17 @@ OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよ�
 
 ## 0.2.4 (October 1, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
-1. PubSecureおよびSubSecureモジュールのrtc.confに入力したプロパティを読み込めないエラーを修正
+1. OutPortPahoPubSecureおよびInPortPahoSubSecureモジュールのrtc.confに入力したプロパティを読み込めないエラーを修正
 
 ## 0.2.3 (October 1, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
-1. PubSecureおよびSubSecureモジュールのMinor correction
+1. OutPortPahoPubSecureおよびInPortPahoSubSecureモジュールのMinor correction
 
 ## 0.2.2 (September 27, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
-1. PublisherおよびPubSecureモジュールに対して、max inflight messagesに関する新たなプロパティを追加
-1. SubSecureモジュールのMinor update
+1. OutPortPahoPublisherおよびOutPortPahoPubSecureモジュールに対して、max inflight messagesに関する新たなプロパティを追加
+1. 1.に伴い、MQTTクライアントモジュールであるPahoPublisherとPahoPubSecureの機能更新
+1. InPortPahoSubSecureモジュールのMinor update
 
 ## 0.2.1 (September 19, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュール

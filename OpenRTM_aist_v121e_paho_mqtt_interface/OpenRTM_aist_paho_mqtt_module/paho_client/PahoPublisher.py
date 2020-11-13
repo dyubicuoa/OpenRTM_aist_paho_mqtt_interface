@@ -4,7 +4,7 @@
 ##
 # @file   PahoPublisher.py
 # @brief  PahoPublisher class
-# @date   2020/11/04
+# @date   2020/11/12
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -57,16 +57,23 @@ class PahoPublisher:
   # @param pmaxinflight Number of messages to be able to transmit at once
   # @param ptopic Topic group
   # @param pqos Quality of MQTT messaging service
+  # @param pretained Whether to retain the latest message in MQTT broker
+  # @param pwill Last will from this publisher to subscribers
   #
-  def paho_initialize(self, pclientid="", pcleansession=True, pmaxinflight=20, ptopic="test", pqos=0):
+  def paho_initialize(self, pclientid="", pcleansession=True, pmaxinflight=20, ptopic="test", pqos=0, pretain=False, pwill=None):
     self.__clientid = pclientid
     self.__cleansession = pcleansession
     self.__maxinflight = pmaxinflight
     self.__topic = ptopic
     self.__qos = pqos
+    self.__retain = pretain
+    self.__will = pwill
+    self.__willretain = False
     self.__pubcl.reinitialise(self.__clientid, self.__cleansession)
     if self.__qos > 0:
       self.__pubcl.max_inflight_messages_set(self.__maxinflight)
+    if self.__will:
+      self.__pubcl.will_set(self.__topic, self.__will, self.__qos, self.__willretain)
     self.__pubcl.on_connect = self.on_connect
     self.__pubcl.on_disconnect = self.on_disconnect
 
@@ -95,7 +102,13 @@ class PahoPublisher:
   # @param pdata Message payload
   #
   def paho_pub(self, pdata):
-    self.__pubcl.publish(self.__topic, pdata, self.__qos)
+    self.__pubcl.publish(self.__topic, pdata, self.__qos, self.__retain)
+
+  ##
+  # @brief Publish a null message to clear retained message from MQTT broker
+  #
+  def paho_pub_nullmsg(self):
+    self.__pubcl.publish(self.__topic, "", self.__qos, True)
 
   ##
   # @brief Get MQTT client
