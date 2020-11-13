@@ -184,7 +184,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     self._rtcout.RTC_PARANOID("put()")
 
     try:
-      PahoPublisher.paho_pub(self, data)
+      PahoPubSecure.paho_pub(self, data)
       return self.PORT_OK
     except:
       self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())

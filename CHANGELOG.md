@@ -1,3 +1,7 @@
+## 0.4.1 (November 12, 2020)
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. OutPortPahoPubSecureモジュールが正常に動作しない問題を修正
+
 ## 0.4.0 (November 12, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
 1. OutPortPahoPublisherおよびOutPortPahoPubSecureモジュールに対して、MQTTプロトコル ver.3.1.1中の'Retain'と'Will'2つの機能を実装
