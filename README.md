@@ -65,7 +65,7 @@ MQTT通信モジュールは以下の4種類で構成されています。なお
 | 8. | maxif | 20 | Max inflight messages。サーバのACKを待たずに同時発信可能なメッセージの数。値が高ければメッセージングのスループットは向上するが、その分メモリ消費量が大きくなる。OutPortPahoPublisherモジュールでQoS>0の場合のみ有効 |
 | 9. | retain | False | MQTT ver.3.1.1におけるRetain（保持）の機能を使用するか否か。Retainを有効化（True）すると、BrokerにPublisher（OutPort）から送信された最新のメッセージが保持されるようになる。これにより遅れて参加してきたSubscriber（InPort）は、通信頻度が低いシステムにおいても、Brokerに接続後すぐに最新のメッセージを取得することができる。RetainはOutPortPahoPublisherモジュールのみ設定可能 |
 | 10. | clrrm | False | Clear retained message。RetainによりBrokerに保持された最新メッセージは、明示的に削除されない限り保持が継続する。True指定でBrokerに保持された最新メッセージを削除する。Retainedメッセージの削除は、OutPortPahoPublisherモジュールからのみ可能 |
-| 11. | will | False | MQTT ver.3.1.1におけるWill（遺言）の機能を使用するか否か。Willを有効化（True）すると、Publisher（OutPort）側で何らかの障害が発生し、正常にdisconnectせずにBrokerから切断された場合に、予め指定していたWillメッセージがBrokerからSubscriber（InPort）に対して送信される。WillメッセージはRTMにおける各種データ型の各項目に数値0（文字列の場合は文字0、Booleanの場合はFalse）が入力されたものとなる。現時点では基本データ型（BasicDataTypes）と拡張データ型（ExtendedDataTypes）のみに対応。WillはOutPortPahoPublisherモジュールのみ設定可能。*※ rtc.confでpreconnect指定により事前にWillを設定する場合はデータ型の指定も必要。詳細は下記Noteを参照のこと* |
+| 11. | will | False | MQTT ver.3.1.1におけるWill（遺言）の機能を使用するか否か。Willを有効化（True）すると、Publisher（OutPort）側で何らかの障害が発生し、正常にdisconnectせずにBrokerから切断された場合に、BrokerからSubscriber（InPort）に対して予め指定していたWillメッセージが即座に送信される。WillメッセージはRTMにおける各種データ型の各項目に数値0（文字列の場合は文字0、Booleanの場合はFalse）が入力されたものとなる。現時点では基本データ型（BasicDataTypes）と拡張データ型（ExtendedDataTypes）のみに対応。WillはOutPortPahoPublisherモジュールのみ設定可能。*※ rtc.confでpreconnect指定により事前にWillを設定する場合はデータ型の指定も必要。詳細は下記Noteを参照のこと* |
 
 **(3) OutPortPahoPubSecure** および **(4) InPortPahoSubSecure**  
 ||Name (Key)|Default value| 説明 |
@@ -83,7 +83,7 @@ MQTT通信モジュールは以下の4種類で構成されています。なお
 | 11. | maxif | 20 | Max inflight messages。サーバのACKを待たずに同時発信可能なメッセージの数。値が高ければメッセージングのスループットは向上するが、その分メモリ消費量が大きくなる。OutPortPahoPubSecureモジュールでQoS>0の場合のみ有効 |
 | 12. | retain | False | MQTT ver.3.1.1におけるRetain（保持）の機能を使用するか否か。Retainを有効化（True）すると、BrokerにPublisher（OutPort）から送信された最新のメッセージが保持されるようになる。これにより遅れて参加してきたSubscriber（InPort）は、通信頻度が低いシステムにおいても、Brokerに接続後すぐに最新のメッセージを取得することができる。OutPortPahoPubSecureモジュールのみ設定可能 |
 | 13. | clrrm | False | Clear retained message。RetainによりBrokerに保持された最新メッセージは、明示的に削除されない限り保持が継続する。True指定でBrokerに保持された最新メッセージを削除する。Retainedメッセージの削除は、OutPortPahoPubSecureモジュールからのみ可能 |
-| 14. | will | False | MQTT ver.3.1.1におけるWill（遺言）の機能を使用するか否か。Willを有効化（True）すると、Publisher（OutPort）側で何らかの障害が発生し、正常にdisconnectせずにBrokerから切断された場合に、予め指定していたWillメッセージがBrokerからSubscriber（InPort）に対して送信される。WillメッセージはRTMにおける各種データ型の各項目に数値0（文字列の場合は文字0、Booleanの場合はFalse）が入力されたものとなる。現時点では基本データ型（BasicDataTypes）と拡張データ型（ExtendedDataTypes）のみに対応。WillはOutPortPahoPubSecureモジュールのみ設定可能。*※ rtc.confでpreconnect指定により事前にWillを設定する場合はデータ型の指定も必要。詳細は下記Noteを参照のこと* |
+| 14. | will | False | MQTT ver.3.1.1におけるWill（遺言）の機能を使用するか否か。Willを有効化（True）すると、Publisher（OutPort）側で何らかの障害が発生し、正常にdisconnectせずにBrokerから切断された場合に、BrokerからSubscriber（InPort）に対して予め指定していたWillメッセージが即座に送信される。WillメッセージはRTMにおける各種データ型の各項目に数値0（文字列の場合は文字0、Booleanの場合はFalse）が入力されたものとなる。現時点では基本データ型（BasicDataTypes）と拡張データ型（ExtendedDataTypes）のみに対応。WillはOutPortPahoPubSecureモジュールのみ設定可能。*※ rtc.confでpreconnect指定により事前にWillを設定する場合はデータ型の指定も必要。詳細は下記Noteを参照のこと* |
 
 プロパティはOpenRTM-aist ver.1.2.0以降であれば、RTコンポーネントの実行前に、rtc.confにて事前設定可能です。このrtc.confを"-f"でオプション指定し、RTコンポーネントを実行することでMQTT Brokerへの接続が完了した状態へと遷移します。なお、Keyは必ずしも上記の順番で入力する必要はありません。いくつかのKeyを選択し、順不同で入力することができます。
 ```bash
