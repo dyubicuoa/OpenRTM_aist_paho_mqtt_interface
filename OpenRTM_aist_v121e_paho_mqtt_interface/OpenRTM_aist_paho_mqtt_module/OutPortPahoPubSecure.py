@@ -4,7 +4,7 @@
 ##
 # @file  OutPortPahoPubSecure.py
 # @brief OutPortPahoPubSecure class
-# @date   2020/11/12
+# @date   2020/11/15
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -70,91 +70,6 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     thread.daemon = True
     thread.start()
     called = True
-
-    self._DATA_TYPE = "dataport.data_type"
-    self._ENDIAN = "dataport.serializer.cdr.endian"
-    # Basici DataTypes
-    self._TIME = "Time"
-    self._TIMED_STATE = "TimedState"
-    self._TIMED_SHORT = "TimedShort"
-    self._TIMED_LONG = "TimedLong"
-    self._TIMED_USHORT = "TimedUShort"
-    self._TIMED_ULONG = "TimedULong"
-    self._TIMED_FLOAT = "TimedFloat"
-    self._TIMED_DOUBLE = "TimedDouble"
-    self._TIMED_CHAR = "TimedChar"
-    self._TIMED_WCHAR = "TimedWChar"
-    self._TIMED_BOOLEAN = "TimedBoolean"
-    self._TIMED_OCTET = "TimedOctet"
-    self._TIMED_STRING = "TimedString"
-    self._TIMED_WSTRING = "TimedWString"
-    self._TIMED_SHORT_SEQ = "TimedShortSeq"
-    self._TIMED_LONG_SEQ = "TimedLongSeq"
-    self._TIMED_USHORT_SEQ = "TimedUShortSeq"
-    self._TIMED_ULONG_SEQ = "TimedULongSeq"
-    self._TIMED_FLOAT_SEQ = "TimedFloatSeq"
-    self._TIMED_DOUBLE_SEQ = "TimedDoubleSeq"
-    self._TIMED_CHAR_SEQ = "TimedCharSeq"
-    self._TIMED_WCHAR_SEQ = "TimedWCharSeq"
-    self._TIMED_BOOLEAN_SEQ = "TimedBooleanSeq"
-    self._TIMED_OCTET_SEQ = "TimedOctetSeq"
-    self._TIMED_STRING_SEQ = "TimedStringSeq"
-    self._TIMED_WSTRING_SEQ = "TimedWStringSeq"
-    # Extended DataTypes
-    self._RGBCOLOUR = "RGBColour"
-    self._POINT2D = "Point2D"
-    self._VECTOR2D = "Vector2D"
-    self._POSE2D = "Pose2D"
-    self._VELOCITY2D = "Velocity2D"
-    self._ACCELERATION2D = "Acceleration2D"
-    self._POSE_VEL2D = "PoseVel2D"
-    self._SIZE2D = "Size2D"
-    self._GEOMETRY2D = "Geometry2D"
-    self._COVARIANCE2D = "Covariance2D"
-    self._POINT_COVARIANCE2D = "PointCovariance2D"
-    self._CARLIKE = "Carlike"
-    self._SPEED_HEADING2D = "SpeedHeading2D"
-    self._POINT3D = "Point3D"
-    self._VECTOR3D = "Vector3D"
-    self._ORIENTATION3D = "Orientation3D"
-    self._POSE3D = "Pose3D"
-    self._VELOCITY3D = "Velocity3D"
-    self._ANGULAR_VELOCITY3D = "AngularVelocity3D"
-    self._ACCELERATION3D = "Acceleration3D"
-    self._ANGULAR_ACCELERATION3D = "AngularAcceleration3D"
-    self._POSE_VEL3D = "PoseVel3D"
-    self._SIZE3D = "Size3D"
-    self._GEOMETRY3D = "Geometry3D"
-    self._COVARIANCE3D = "Covariance3D"
-    self._SPEED_HEADING3D = "SpeedHeading3D"
-    self._OAP = "OAP"
-    self._TIMED_RGBCOLOUR = "TimedRGBColour"
-    self._TIMED_POINT2D = "TimedPoint2D"
-    self._TIMED_VECTOR2D = "TimedVector2D"
-    self._TIMED_POSE2D = "TimedPose2D"
-    self._TIMED_VELOCITY2D = "TimedVelocity2D"
-    self._TIMED_ACCELERATION2D = "TimedAcceleration2D"
-    self._TIMED_POSE_VEL2D = "TimedPoseVel2D"
-    self._TIMED_SIZE2D = "TimedSize2D"
-    self._TIMED_GEOMETRY2D = "TimedGeometry2D"
-    self._TIMED_COVARIANCE2D = "TimedCovariance2D"
-    self._TIMED_POINT_COVARIANCE2D = "TimedPointCovariance2D"
-    self._TIMED_CARLIKE = "TimedCarlike"
-    self._TIMED_SPEED_HEADING2D = "TimedSpeedHeading2D"
-    self._TIMED_POINT3D = "TimedPoint3D"
-    self._TIMED_VECTOR3D = "TimedVector3D"
-    self._TIMED_ORIENTATION3D = "TimedOrientation3D"
-    self._TIMED_POSE3D = "TimedPose3D"
-    self._TIMED_VELOCITY3D = "TimedVelocity3D"
-    self._TIMED_ANGULAR_VELOCITY3D = "TimedAngularVelocity3D"
-    self._TIMED_ACCELERATION3D = "TimedAcceleration3D"
-    self._TIMED_ANGULAR_ACCELERATION3D = "TimedAngularAcceleration3D"
-    self._TIMED_POSE_VEL3D = "TimedPoseVel3D"
-    self._TIMED_SIZE3D = "TimedSize3D"
-    self._TIMED_GEOMETRY3D = "TimedGeometry3D"
-    self._TIMED_COVARIANCE3D = "TimedCovariance3D"
-    self._TIMED_SPEED_HEADING3D = "TimedSpeedHeading3D"
-    self._TIMED_OAP = "TimedOAP"
 
     return
 
@@ -469,7 +384,12 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
     if tmp_will == True:
-      tmp_willmsg = self.generateWillMessage(properties)
+      self.generateDataTypeInfo(properties)
+      if self.__datatype and self.__endian:
+        tmp_willmsg = cdrMarshal(any.to_any(self.__datatype).typecode(), self.__datatype, self.__endian)
+      else:
+        tmp_willmsg = None
+        print("DataType or Endian is unknown, therefore 'Will' function does not work.")
 
     print("[connecting to MQTT broker start]")
     PahoPubSecure.paho_initialize(self, tmp_id, tmp_cs, tmp_maxif, tmp_topic, tmp_qos, tmp_retain, tmp_willmsg)
@@ -479,7 +399,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
 
     if clear_retained_msg == True:
       PahoPubSecure.paho_pub_nullmsg(self)
-      print("Cleared retained message from MQTT broker.")
+      print("* Cleared retained message from MQTT broker.")
 
     return True
 
@@ -506,15 +426,18 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
       return self.UNKNOWN_ERROR
 
   ##
-  # @brief Generate a last will message
+  # @brief Generate information about datatype and endian
   #
-  def generateWillMessage(self, properties):
+  def generateDataTypeInfo(self, properties):
+    PN_DATA_TYPE = "dataport.data_type"
+    PN_ENDIAN = "dataport.serializer.cdr.endian"
+
     tmp_datatype = None
     tmp_endian = None
 
-    indexDT = OpenRTM_aist.NVUtil.find_index(properties, self._DATA_TYPE)
+    indexDT = OpenRTM_aist.NVUtil.find_index(properties, PN_DATA_TYPE)
     if indexDT < 0:
-      print("Can not find DataType.")
+      print("  Can not find DataType.")
       self._rtcout.RTC_ERROR("DataType is not set.")
       return False
     else:
@@ -523,13 +446,13 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
         if not tmp_datatype:
           self._rtcout.RTC_ERROR("DataType has no string.")
           return False
-        print("DataType: " + tmp_datatype)
+        print("  DataType: " + tmp_datatype)
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
-    indexED = OpenRTM_aist.NVUtil.find_index(properties, self._ENDIAN)
+    indexED = OpenRTM_aist.NVUtil.find_index(properties, PN_ENDIAN)
     if indexED < 0:
-      print("Can not find Endian.")
+      print("  Can not find Endian.")
       self._rtcout.RTC_ERROR("Endian is not set.")
       return False
     else:
@@ -538,10 +461,10 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
         if not tmp_endian:
           self._rtcout.RTC_ERROR("Endian has no string.")
           return False
-        print("Endian: " + tmp_endian)
+        #print("  Endian: " + tmp_endian)
         tmp_endian = OpenRTM_aist.split(tmp_endian, ",")
         tmp_endian = OpenRTM_aist.normalize(tmp_endian)
-        print("Normalized endian: " + tmp_endian)
+        print("  Normalized endian: " + tmp_endian)
         if tmp_endian == "little":
           self.__endian = True
         elif tmp_endian == "big":
@@ -552,198 +475,197 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
     if "Timed" in tmp_datatype and "Seq" in tmp_datatype:
-      if self._TIMED_SHORT_SEQ in tmp_datatype:
+      if any.to_any(RTC.TimedShortSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append(0)
         self.__datatype = RTC.TimedShortSeq(RTC.Time(0, 0), dataBuff)
-      elif self._TIMED_LONG_SEQ in tmp_datatype:
+      elif any.to_any(RTC.TimedLongSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append(0)
         self.__datatype = RTC.TimedLongSeq(RTC.Time(0, 0), dataBuff)
-      elif self._TIMED_USHORT_SEQ in tmp_datatype:
+      elif any.to_any(RTC.TimedUShortSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append(0)
         self.__datatype = RTC.TimedUShortSeq(RTC.Time(0, 0), dataBuff)
-      elif self._TIMED_ULONG_SEQ in tmp_datatype:
+      elif any.to_any(RTC.TimedULongSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append(0)
         self.__datatype = RTC.TimedULongSeq(RTC.Time(0, 0), dataBuff)
-      elif self._TIMED_FLOAT_SEQ in tmp_datatype:
+      elif any.to_any(RTC.TimedFloatSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append(0)
         self.__datatype = RTC.TimedFloatSeq(RTC.Time(0, 0), dataBuff)
-      elif self._TIMED_DOUBLE_SEQ in tmp_datatype:
+      elif any.to_any(RTC.TimedDoubleSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append(0)
         self.__datatype = RTC.TimedDoubleSeq(RTC.Time(0, 0), dataBuff)
-      elif self._TIMED_CHAR_SEQ in tmp_datatype:
+      elif any.to_any(RTC.TimedCharSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append('0')
         self.__datatype = RTC.TimedCharSeq(RTC.Time(0, 0), dataBuff)
-      elif self._TIMED_WCHAR_SEQ in tmp_datatype:
+      elif any.to_any(RTC.TimedWCharSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append('0')
         self.__datatype = RTC.TimedWCharSeq(RTC.Time(0, 0), dataBuff)
-      elif self._TIMED_BOOLEAN_SEQ in tmp_datatype:
+      elif any.to_any(RTC.TimedBooleanSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append(False)
         self.__datatype = RTC.TimedBooleanSeq(RTC.Time(0, 0), dataBuff)
-      elif self._TIMED_OCTET_SEQ in tmp_datatype:
+      elif any.to_any(RTC.TimedOctetSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append('0')
         self.__datatype = RTC.TimedOctetSeq(RTC.Time(0, 0), dataBuff)
-      elif self._TIMED_STRING_SEQ in tmp_datatype:
+      elif any.to_any(RTC.TimedStringSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append("0")
         self.__datatype = RTC.TimedStringSeq(RTC.Time(0, 0), dataBuff)
-      elif self._TIMED_WSTRING_SEQ in tmp_datatype:
+      elif any.to_any(RTC.TimedWStringSeq).typecode().name() in tmp_datatype:
         dataBuff = []
         dataBuff.append("0")
         self.__datatype = RTC.TimedWStringSeq(RTC.Time(0, 0), dataBuff)
     elif "Timed" in tmp_datatype:
-      if self._TIMED_STATE in tmp_datatype:
+      if any.to_any(RTC.TimedState).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedState(RTC.Time(0, 0), 0)
-      elif self._TIMED_SHORT in tmp_datatype:
+      elif any.to_any(RTC.TimedShort).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedShort(RTC.Time(0, 0), 0)
-      elif self._TIMED_LONG in tmp_datatype:
+      elif any.to_any(RTC.TimedLong).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedLong(RTC.Time(0, 0), 0)
-      elif self._TIMED_USHORT in tmp_datatype:
+      elif any.to_any(RTC.TimedUShort).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedUShort(RTC.Time(0, 0), 0)
-      elif self._TIMED_ULONG in tmp_datatype:
+      elif any.to_any(RTC.TimedULong).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedULong(RTC.Time(0, 0), 0)
-      elif self._TIMED_FLOAT in tmp_datatype:
+      elif any.to_any(RTC.TimedFloat).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedFloat(RTC.Time(0, 0), 0)
-      elif self._TIMED_DOUBLE in tmp_datatype:
+      elif any.to_any(RTC.TimedDouble).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedDouble(RTC.Time(0, 0), 0)
-      elif self._TIMED_CHAR in tmp_datatype:
+      elif any.to_any(RTC.TimedChar).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedChar(RTC.Time(0, 0), '0')
-      elif self._TIMED_WCHAR in tmp_datatype:
+      elif any.to_any(RTC.TimedWChar).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedWChar(RTC.Time(0, 0), '0')
-      elif self._TIMED_BOOLEAN in tmp_datatype:
+      elif any.to_any(RTC.TimedBoolean).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedBoolean(RTC.Time(0, 0), False)
-      elif self._TIMED_OCTET in tmp_datatype:
+      elif any.to_any(RTC.TimedOctet).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedOctet(RTC.Time(0, 0), '0')
-      elif self._TIMED_STRING in tmp_datatype:
+      elif any.to_any(RTC.TimedString).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedString(RTC.Time(0, 0), "0")
-      elif self._TIMED_WSTRING in tmp_datatype:
+      elif any.to_any(RTC.TimedWString).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedWString(RTC.Time(0, 0), "0")
-      elif self._TIMED_RGBCOLOUR in tmp_datatype:
+      elif any.to_any(RTC.TimedRGBColour).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedRGBColour(RTC.Time(0, 0), RTC.RGBColour(0, 0, 0))
-      elif self._TIMED_POINT2D in tmp_datatype:
+      elif any.to_any(RTC.TimedPoint2D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedPoint2D(RTC.Time(0, 0), RTC.Point2D(0, 0))
-      elif self._TIMED_VECTOR2D in tmp_datatype:
+      elif any.to_any(RTC.TimedVector2D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedVector2D(RTC.Time(0, 0), RTC.Vector2D(0, 0))
-      elif self._TIMED_POSE2D in tmp_datatype:
+      elif any.to_any(RTC.TimedPose2D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedPose2D(RTC.Time(0, 0), RTC.Pose2D(RTC.Point2D(0, 0), 0))
-      elif self._TIMED_VELOCITY2D in tmp_datatype:
+      elif any.to_any(RTC.TimedVelocity2D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedVelocity2D(RTC.Time(0, 0), RTC.Velocity2D(0, 0, 0))
-      elif self._TIMED_ACCELERATION2D in tmp_datatype:
+      elif any.to_any(RTC.TimedAcceleration2D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedAcceleration2D(RTC.Time(0, 0), RTC.Acceleration2D(0, 0))
-      elif self._TIMED_POSE_VEL2D in tmp_datatype:
+      elif any.to_any(RTC.TimedPoseVel2D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedPoseVel2D(RTC.Time(0, 0), RTC.PoseVel2D(RTC.Pose2D(RTC.Point2D(0, 0), 0), RTC.Velocity2D(0, 0, 0)))
-      elif self._TIMED_SIZE2D in tmp_datatype:
+      elif any.to_any(RTC.TimedSize2D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedSize2D(RTC.Time(0, 0), RTC.Size2D(0, 0))
-      elif self._TIMED_GEOMETRY2D in tmp_datatype:
+      elif any.to_any(RTC.TimedGeometry2D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedGeometry2D(RTC.Time(0, 0), RTC.Geometry2D(RTC.Pose2D(RTC.Point2D(0, 0), 0), RTC.Size2D(0, 0)))
-      elif self._TIMED_COVARIANCE2D in tmp_datatype:
+      elif any.to_any(RTC.TimedCovariance2D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedCovariance2D(RTC.Time(0, 0), RTC.Covariance2D(0, 0, 0, 0, 0, 0))
-      elif self._TIMED_POINT_COVARIANCE2D in tmp_datatype:
+      elif any.to_any(RTC.TimedPointCovariance2D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedPointCovariance2D(RTC.Time(0, 0), RTC.PointCovariance2D(0, 0, 0))
-      elif self._TIMED_CARLIKE in tmp_datatype:
+      elif any.to_any(RTC.TimedCarlike).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedCarlike(RTC.Time(0, 0), RTC.Carlike(0, 0))
-      elif self._TIMED_SPEED_HEADING2D in tmp_datatype:
+      elif any.to_any(RTC.TimedSpeedHeading2D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedSpeedHeading2D(RTC.Time(0, 0), RTC.SpeedHeading2D(0, 0))
-      elif self._TIMED_POINT3D in tmp_datatype:
+      elif any.to_any(RTC.TimedPoint3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedPoint3D(RTC.Time(0, 0), RTC.Point3D(0, 0, 0))
-      elif self._TIMED_VECTOR3D in tmp_datatype:
+      elif any.to_any(RTC.TimedVector3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedVector3D(RTC.Time(0, 0), RTC.Vector3D(0, 0, 0))
-      elif self._TIMED_ORIENTATION3D in tmp_datatype:
+      elif any.to_any(RTC.TimedOrientation3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedOrientation3D(RTC.Time(0, 0), RTC.Orientation3D(0, 0, 0))
-      elif self._TIMED_POSE3D in tmp_datatype:
+      elif any.to_any(RTC.TimedPose3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedPose3D(RTC.Time(0, 0), RTC.Pose3D(RTC.Point3D(0, 0, 0), RTC.Orientation3D(0, 0, 0)))
-      elif self._TIMED_VELOCITY3D in tmp_datatype:
+      elif any.to_any(RTC.TimedVelocity3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedVelocity3D(RTC.Time(0, 0), RTC.Velocity3D(0, 0, 0, 0, 0, 0))
-      elif self._TIMED_ANGULAR_VELOCITY3D in tmp_datatype:
+      elif any.to_any(RTC.TimedAngularVelocity3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedAngularVelocity3D(RTC.Time(0, 0), RTC.AngularVelocity3D(0, 0, 0))
-      elif self._TIMED_ACCELERATION3D in tmp_datatype:
+      elif any.to_any(RTC.TimedAcceleration3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedAcceleration3D(RTC.Time(0, 0), RTC.Acceleration3D(0, 0, 0))
-      elif self._TIMED_ANGULAR_ACCELERATION3D in tmp_datatype:
+      elif any.to_any(RTC.TimedAngularAcceleration3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedAngularAcceleration3D(RTC.Time(0, 0), RTC.AngularAcceleration3D(0, 0, 0))
-      elif self._TIMED_POSE_VEL3D in tmp_datatype:
+      elif any.to_any(RTC.TimedPoseVel3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedPoseVel3D(RTC.Time(0, 0), RTC.PoseVel3D(RTC.Pose3D(RTC.Point3D(0, 0, 0), RTC.Orientation3D(0, 0, 0)), RTC.Velocity3D(0, 0, 0, 0, 0, 0)))
-      elif self._TIMED_SIZE3D in tmp_datatype:
+      elif any.to_any(RTC.TimedSize3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedSize3D(RTC.Time(0, 0), RTC.Size3D(0, 0, 0))
-      elif self._TIMED_GEOMETRY3D in tmp_datatype:
+      elif any.to_any(RTC.TimedGeometry3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedGeometry3D(RTC.Time(0, 0), RTC.Geometry3D(RTC.Pose3D(RTC.Point3D(0, 0, 0), RTC.Orientation3D(0, 0, 0)), RTC.Size3D(0, 0, 0)))
-      elif self._TIMED_COVARIANCE3D in tmp_datatype:
+      elif any.to_any(RTC.TimedCovariance3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedCovariance3D(RTC.Time(0, 0), RTC.Covariance3D(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
-      elif self._TIMED_SPEED_HEADING3D in tmp_datatype:
+      elif any.to_any(RTC.TimedSpeedHeading3D).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedSpeedHeading3D(RTC.Time(0, 0), RTC.SpeedHeading3D(0, RTC.Orientation3D(0, 0, 0)))
-      elif self._TIMED_OAP in tmp_datatype:
+      elif any.to_any(RTC.TimedOAP).typecode().name() in tmp_datatype:
         self.__datatype = RTC.TimedOAP(RTC.Time(0, 0), RTC.OAP(RTC.Velocity3D(0, 0, 0, 0, 0, 0), RTC.Velocity3D(0, 0, 0, 0, 0, 0), RTC.Velocity3D(0, 0, 0, 0, 0, 0)))
-    elif self._TIME in tmp_datatype:
+    elif any.to_any(RTC.Time).typecode().name() in tmp_datatype:
       self.__datatype = RTC.Time(0, 0)
     else:
       if "Angular" in tmp_datatype:
-        if self._ANGULAR_VELOCITY3D in tmp_datatype:
+        if any.to_any(RTC.AngularVelocity3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.AngularVelocity3D(0, 0, 0)
-        elif self._ANGULAR_ACCELERATION3D in tmp_datatype:
+        elif any.to_any(RTC.AngularAcceleration3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.AngularAcceleration3D(0, 0, 0)
       else:
-        if self._RGBCOLOUR in tmp_datatype:
+        if any.to_any(RTC.RGBColour).typecode().name() in tmp_datatype:
           self.__datatype = RTC.RGBColour(0, 0, 0)
-        elif self._POINT2D in tmp_datatype:
+        elif any.to_any(RTC.Point2D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Point2D(0, 0)
-        elif self._VECTOR2D in tmp_datatype:
+        elif any.to_any(RTC.Vector2D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Vector2D(0, 0)
-        elif self._POSE2D in tmp_datatype:
+        elif any.to_any(RTC.Pose2D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Pose2D(RTC.Point2D(0, 0), 0)
-        elif self._VELOCITY2D in tmp_datatype:
+        elif any.to_any(RTC.Velocity2D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Velocity2D(0, 0, 0)
-        elif self._ACCELERATION2D in tmp_datatype:
+        elif any.to_any(RTC.Acceleration2D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Acceleration2D(0, 0)
-        elif self._POSE_VEL2D in tmp_datatype:
+        elif any.to_any(RTC.PoseVel2D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.PoseVel2D(RTC.Pose2D(RTC.Point2D(0, 0), 0), RTC.Velocity2D(0, 0, 0))
-        elif self._SIZE2D in tmp_datatype:
+        elif any.to_any(RTC.Size2D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Size2D(0, 0)
-        elif self._GEOMETRY2D in tmp_datatype:
+        elif any.to_any(RTC.Geometry2D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Geometry2D(RTC.Pose2D(RTC.Point2D(0, 0), 0), RTC.Size2D(0, 0))
-        elif self._COVARIANCE2D in tmp_datatype:
+        elif any.to_any(RTC.Covariance2D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Covariance2D(0, 0, 0, 0, 0, 0)
-        elif self._POINT_COVARIANCE2D in tmp_datatype:
+        elif any.to_any(RTC.PointCovariance2D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.PointCovariance2D(0, 0, 0)
-        elif self._CARLIKE in tmp_datatype:
+        elif any.to_any(RTC.Carlike).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Carlike(0, 0)
-        elif self._SPEED_HEADING2D in tmp_datatype:
+        elif any.to_any(RTC.SpeedHeading2D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.SpeedHeading2D(0, 0)
-        elif self._POINT3D in tmp_datatype:
+        elif any.to_any(RTC.Point3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Point3D(0, 0, 0)
-        elif self._VECTOR3D in tmp_datatype:
+        elif any.to_any(RTC.Vector3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Vector3D(0, 0, 0)
-        elif self._ORIENTATION3D in tmp_datatype:
+        elif any.to_any(RTC.Orientation3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Orientation3D(0, 0, 0)
-        elif self._POSE3D in tmp_datatype:
+        elif any.to_any(RTC.Pose3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Pose3D(RTC.Point3D(0, 0, 0), RTC.Orientation3D(0, 0, 0))
-        elif self._VELOCITY3D in tmp_datatype:
+        elif any.to_any(RTC.Velocity3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Velocity3D(0, 0, 0, 0, 0, 0)
-        elif self._ACCELERATION3D in tmp_datatype:
+        elif any.to_any(RTC.Acceleration3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Acceleration3D(0, 0, 0)
-        elif self._POSE_VEL3D in tmp_datatype:
+        elif any.to_any(RTC.PoseVel3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.PoseVel3D(RTC.Pose3D(RTC.Point3D(0, 0, 0), RTC.Orientation3D(0, 0, 0)), RTC.Velocity3D(0, 0, 0, 0, 0, 0))
-        elif self._SIZE3D in tmp_datatype:
+        elif any.to_any(RTC.Size3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Size3D(0, 0, 0)
-        elif self._GEOMETRY3D in tmp_datatype:
+        elif any.to_any(RTC.Geometry3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Geometry3D(RTC.Pose3D(RTC.Point3D(0, 0, 0), RTC.Orientation3D(0, 0, 0)), RTC.Size3D(0, 0, 0))
-        elif self._COVARIANCE3D in tmp_datatype:
+        elif any.to_any(RTC.Covariance3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.Covariance3D(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-        elif self._SPEED_HEADING3D in tmp_datatype:
+        elif any.to_any(RTC.SpeedHeading3D).typecode().name() in tmp_datatype:
           self.__datatype = RTC.SpeedHeading3D(0, RTC.Orientation3D(0, 0, 0))
-        elif self._OAP in tmp_datatype:
+        elif any.to_any(RTC.OAP).typecode().name() in tmp_datatype:
           self.__datatype = RTC.OAP(RTC.Velocity3D(0, 0, 0, 0, 0, 0), RTC.Velocity3D(0, 0, 0, 0, 0, 0), RTC.Velocity3D(0, 0, 0, 0, 0, 0))
-
-    cdrdata = cdrMarshal(any.to_any(self.__datatype).typecode(), self.__datatype, self.__endian)
-
-    return cdrdata
+        else:
+          self.__datatype = None
+          print("  The datatype does not support 'Will' function.")
 
 ##
 # @brief Catch ctrl+c interruption

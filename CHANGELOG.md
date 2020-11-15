@@ -1,3 +1,9 @@
+## 0.4.2 (November 15, 2020)
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. generateWillMessage関数をgenerateDataTypeInfo関数に名称変更し、関数内ではデータ型オブジェクトとエンディアン判定のみを行うよう変更
+1. １．に伴い、WillメッセージをgenerateDataTypeInfo関数の外で作成するように変更
+1. データ型の判定に使用する文字列を、データ型オブジェクトのtypecodeから取得するように変更
+
 ## 0.4.1 (November 12, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
 1. OutPortPahoPubSecureモジュールが正常に動作しない問題を修正
