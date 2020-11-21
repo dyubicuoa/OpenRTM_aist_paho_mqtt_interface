@@ -1,3 +1,14 @@
+## 0.5.0 (November 20, 2020)
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. JSONシリアライズ版MQTT通信モジュールを４つ追加
+	* OutPortPahoPubJson　- OutPort用セキュア通信機能なし
+	* InPortPahoSubJson - InPort用セキュア通信機能なし
+	* OutPortPahoPubJsonSecure - OutPort用セキュア通信機能付き
+	* InPortPahoSubJsonSecure - InPort用セキュア通信機能付き
+1. 1.の実装に必要となるCDRとJSON間のre-serializeモジュールを追加
+1. 1.と2.に伴い、__init__ファイルを更新
+1. JSONシリアライズ版モジュールを、すでにリリース済みのCDRシリアライズ版モジュールと区別するため、CDRシリアライズ版モジュールのInterface Typeを'mqtt\_cdr'（セキュア通信機能なし）または'mqtts\_cdr'（セキュア通信機能付き）に変更
+
 ## 0.4.2 (November 15, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
 1. generateWillMessage関数をgenerateDataTypeInfo関数に名称変更し、関数内ではデータ型オブジェクトとエンディアン判定のみを行うよう変更

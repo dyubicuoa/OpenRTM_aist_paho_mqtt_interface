@@ -4,7 +4,7 @@
 ##
 # @file   InPortPahoSubSecure.py
 # @brief  InPortPahoSubSecure class
-# @date   2020/11/12
+# @date   2020/11/20
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -66,7 +66,7 @@ class InPortPahoSubSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
     OpenRTM_aist.InPortProvider.__init__(self)
     PahoSubSecure.__init__(self)
 
-    self.setInterfaceType("paho_mqtt")
+    self.setInterfaceType("mqtts_cdr")
     
     self._buffer = None
     self._profile = None
@@ -442,7 +442,7 @@ signal.signal(signal.SIGINT, InPortPahoSubSecure.signal_handler)
 #
 def InPortPahoSubSecureInit(self):
   factory = OpenRTM_aist.InPortProviderFactory.instance()
-  factory.addFactory("paho_mqtts",
+  factory.addFactory("mqtts_cdr",
                      InPortPahoSubSecure,
                      OpenRTM_aist.Delete)
 

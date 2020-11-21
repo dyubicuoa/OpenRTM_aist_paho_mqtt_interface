@@ -4,7 +4,7 @@
 ##
 # @file   InPortPahoSubscriber.py
 # @brief  InPortPahoSubscriber class
-# @date   2020/11/12
+# @date   2020/11/20
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -66,7 +66,7 @@ class InPortPahoSubscriber(OpenRTM_aist.InPortProvider, PahoSubscriber):
     OpenRTM_aist.InPortProvider.__init__(self)
     PahoSubscriber.__init__(self)
 
-    self.setInterfaceType("paho_mqtt")
+    self.setInterfaceType("mqtt_cdr")
     
     self._buffer = None
     self._profile = None
@@ -396,7 +396,7 @@ signal.signal(signal.SIGINT, InPortPahoSubscriber.signal_handler)
 #
 def InPortPahoSubscriberInit(self):
   factory = OpenRTM_aist.InPortProviderFactory.instance()
-  factory.addFactory("paho_mqtt",
+  factory.addFactory("mqtt_cdr",
                      InPortPahoSubscriber,
                      OpenRTM_aist.Delete)
 

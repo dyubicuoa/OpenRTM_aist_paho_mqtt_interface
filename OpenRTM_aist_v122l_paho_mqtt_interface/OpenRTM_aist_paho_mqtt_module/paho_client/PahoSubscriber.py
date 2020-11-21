@@ -40,16 +40,16 @@ class PahoSubscriber:
   def on_connect(self, mqttc, obj, flags, rc):
     #print("rc: "+str(rc))
     if(rc == 0):
-      print("connected to broker.")
+      print(" Connected to broker. ")
       self.__subcl.subscribe(self.__topic, self.__qos)
     else:
-      print("failed to connect to broker with code "+str(rc)+".")
+      print("Failed to connect to broker with code "+str(rc)+".")
 
   ##
   # @brief Call back function when succeeded to disconnect from broker
   #
   def on_disconnect(self, client, userdata, rc):
-    print("disconnected from broker with code "+str(rc)+".")
+    print(" Disconnected from broker with code "+str(rc)+". ")
 
   ##
   # @brief Call back function when started to subscribe messages

@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: euc-jp -*-
 
 ##
-# @file  OutPortPahoPubSecure.py
-# @brief OutPortPahoPubSecure class
+# @file  OutPortPahoPubJsonSecure.py
+# @brief OutPortPahoPubJsonSecure class
 # @date   2020/11/20
 # @author Daishi Yoshino
 #
@@ -24,6 +24,7 @@ import time
 import threading
 import sys
 from OpenRTM_aist_paho_mqtt_module.paho_client.PahoPubSecure import PahoPubSecure
+from OpenRTM_aist_paho_mqtt_module.reserializer.DataTypeFormat import *
 
 # There was a Ctrl+C interruption or not
 stop = False
@@ -31,10 +32,10 @@ stop = False
 called = False
 
 ##
-# @class OutPortPahoPubSecure
-# @brief OutPortPahoPubSecure class
+# @class OutPortPahoPubJsonSecure
+# @brief OutPortPahoPubJsonSecure class
 #
-class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
+class OutPortPahoPubJsonSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
   """
   """
 
@@ -64,7 +65,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
   def __init__(self):
     global called
     PahoPubSecure.__init__(self)
-    self._rtcout = OpenRTM_aist.Manager.instance().getLogbuf("OutPortPahoPubSecure")
+    self._rtcout = OpenRTM_aist.Manager.instance().getLogbuf("OutPortPahoPubJsonSecure")
     self._properties = None
     thread = threading.Thread(target=self.catch_signal)
     thread.daemon = True
@@ -77,7 +78,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
   # @brief Destructor
   #
   def __del__(self, CorbaConsumer=PahoPubSecure):
-    self._rtcout.RTC_PARANOID("~OutPortPahoPubSecure()")
+    self._rtcout.RTC_PARANOID("~OutPortPahoPubJsonSecure()")
     print("[disconnecting from MQTT broker start]")
     PahoPubSecure.paho_disconnect(self)
     print("[disconnecting from MQTT broker end]")
@@ -99,7 +100,9 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     self._rtcout.RTC_PARANOID("put()")
 
     try:
-      PahoPubSecure.paho_pub(self, data)
+      jsonmsg = self.__formatter.reserializeFromCdrToJson(data)
+      #PahoPubSecure.paho_pub(self, data)
+      PahoPubSecure.paho_pub(self, jsonmsg)
       return self.PORT_OK
     except:
       self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
@@ -117,7 +120,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
   def subscribeInterface(self, properties):
     self._rtcout.RTC_TRACE("subscribeInterface()")
 
-    if self.subscribePahoPubSecure(properties):
+    if self.subscribePahoPubJsonSecure(properties):
       return True
     
     return False
@@ -148,7 +151,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
   ##
   # @brief Set properties relating to Paho Client
   #
-  def subscribePahoPubSecure(self, properties):
+  def subscribePahoPubJsonSecure(self, properties):
     self._rtcout.RTC_TRACE("subscribePahoPubSecure()")
     
     PN_HOST = "host"
@@ -383,10 +386,18 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
+    self.generateDataTypeInfo(properties)
+
+    if self.__datatype and self.__endian:
+      self.generateFormatter(self.__datatype, self.__endian)
+    else:
+      self._rtcout.RTC_ERROR("DataType or Endian is unknown.")
+      return False
+
     if tmp_will == True:
-      self.generateDataTypeInfo(properties)
       if self.__datatype and self.__endian:
-        tmp_willmsg = cdrMarshal(any.to_any(self.__datatype).typecode(), self.__datatype, self.__endian)
+        cdrdata = cdrMarshal(any.to_any(self.__datatype).typecode(), self.__datatype, self.__endian)
+        tmp_willmsg = self.__formatter.reserializeFromCdrToJson(cdrdata)
       else:
         tmp_willmsg = None
         print("DataType or Endian is unknown, therefore 'Will' function does not work.")
@@ -667,24 +678,163 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
           self.__datatype = None
           print("  The datatype does not support 'Will' function.")
 
+  ##
+  # @brief Generate a formatter covering two serialization formats
+  #
+  def generateFormatter(self, datatype, endian):
+    tmp_dtname = any.to_any(datatype).typecode().name()
+
+    if tmp_dtname == any.to_any(RTC.Time).typecode().name():
+      self.__formatter = TimeFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedState).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedShort).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedLong).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedUShort).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedULong).typecode().name() or\
+         tmp_dtname == any.to_any(RTC.TimedFloat).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedDouble).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedChar).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedWChar).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedBoolean).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedOctet).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedString).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedWString).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedShortSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedLongSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedUShortSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedULongSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedFloatSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedDoubleSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedCharSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedWCharSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedBooleanSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedOctetSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedStringSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedWStringSeq).typecode().name():
+      self.__formatter = BasicDataTypeFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.RGBColour).typecode().name():
+      self.__formatter = RGBColourFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Point2D).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.Vector2D).typecode().name():
+      self.__formatter = PointOrVector2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Pose2D).typecode().name():
+      self.__formatter = Pose2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Velocity2D).typecode().name():
+      self.__formatter = Velocity2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Acceleration2D).typecode().name():
+      self.__formatter = Acceleration2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.PoseVel2D).typecode().name():
+      self.__formatter = PoseVel2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Size2D).typecode().name():
+      self.__formatter = Size2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Geometry2D).typecode().name():
+      self.__formatter = Geometry2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Covariance2D).typecode().name():
+      self.__formatter = Covariance2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.PointCovariance2D).typecode().name():
+      self.__formatter = PointCovariance2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Carlike).typecode().name():
+      self.__formatter = CarlikeFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.SpeedHeading2D).typecode().name():
+      self.__formatter = SpeedHeading2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Point3D).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.Vector3D).typecode().name():
+      self.__formatter = PointOrVector3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Orientation3D).typecode().name():
+      self.__formatter = Orientation3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Pose3D).typecode().name():
+      self.__formatter = Pose3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Velocity3D).typecode().name():
+      self.__formatter = Velocity3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.AngularVelocity3D).typecode().name():
+      self.__formatter = AngularVelocity3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Acceleration3D).typecode().name():
+      self.__formatter = Acceleration3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.AngularAcceleration3D).typecode().name():
+      self.__formatter = AngularAcceleration3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.PoseVel3D).typecode().name():
+      self.__formatter = PoseVel3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Size3D).typecode().name():
+      self.__formatter = Size3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Geometry3D).typecode().name():
+      self.__formatter = Geometry3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Covariance3D).typecode().name():
+      self.__formatter = Covariance3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.SpeedHeading3D).typecode().name():
+      self.__formatter = SpeedHeading3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.OAP).typecode().name():
+      self.__formatter = OAPFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedRGBColour).typecode().name():
+      self.__formatter = TimedRGBColourFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPoint2D).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedVector2D).typecode().name():
+      self.__formatter = TimedPointOrVector2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPose2D).typecode().name():
+      self.__formatter = TimedPose2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedVelocity2D).typecode().name():
+      self.__formatter = TimedVelocity2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedAcceleration2D).typecode().name():
+      self.__formatter = TimedAcceleration2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPoseVel2D).typecode().name():
+      self.__formatter = TimedPoseVel2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedSize2D).typecode().name():
+      self.__formatter = TimedSize2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedGeometry2D).typecode().name():
+      self.__formatter = TimedGeometry2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedCovariance2D).typecode().name():
+      self.__formatter = TimedCovariance2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPointCovariance2D).typecode().name():
+      self.__formatter = TimedPointCovariance2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedCarlike).typecode().name():
+      self.__formatter = TimedCarlikeFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedSpeedHeading2D).typecode().name():
+      self.__formatter = TimedSpeedHeading2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPoint3D).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedVector3D).typecode().name():
+      self.__formatter = TimedPointOrVector3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedOrientation3D).typecode().name():
+      self.__formatter = TimedOrientation3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPose3D).typecode().name():
+      self.__formatter = TimedPose3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedVelocity3D).typecode().name():
+      self.__formatter = TimedVelocity3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedAngularVelocity3D).typecode().name():
+      self.__formatter = TimedAngularVelocity3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedAcceleration3D).typecode().name():
+      self.__formatter = TimedAcceleration3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedAngularAcceleration3D).typecode().name():
+      self.__formatter = TimedAngularAcceleration3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPoseVel3D).typecode().name():
+      self.__formatter = TimedPoseVel3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedSize3D).typecode().name():
+      self.__formatter = TimedSize3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedGeometry3D).typecode().name():
+      self.__formatter = TimedGeometry3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedCovariance3D).typecode().name():
+      self.__formatter = TimedCovariance3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedSpeedHeading3D).typecode().name():
+      self.__formatter = TimedSpeedHeading3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedOAP).typecode().name():
+      self.__formatter = TimedOAPFormat(datatype, endian)
+
 ##
 # @brief Catch ctrl+c interruption
 #
-signal.signal(signal.SIGINT, OutPortPahoPubSecure.signal_handler)
+signal.signal(signal.SIGINT, OutPortPahoPubJsonSecure.signal_handler)
 
 ##
-# @brief Initialize OutPortPahoPubSecure module
+# @brief Initialize OutPortPahoPubJsonSecure module
 #
-def OutPortPahoPubSecureInit(self):
+def OutPortPahoPubJsonSecureInit(self):
   factory = OpenRTM_aist.InPortConsumerFactory.instance()
-  factory.addFactory("mqtts_cdr",
-                     OutPortPahoPubSecure,
+  factory.addFactory("mqtts_json",
+                     OutPortPahoPubJsonSecure,
                      OpenRTM_aist.Delete)
 
 ##
-# @brief Register OutPortPahoPubSecure module
+# @brief Register OutPortPahoPubJsonSecure module
 #
 def registerModule():
   print("[Secure Paho Publisher initialization start]")
-  OutPortPahoPubSecureInit()
+  OutPortPahoPubJsonSecureInit()
   print("[Secure Paho Publisher initialization end]")

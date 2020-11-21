@@ -4,7 +4,7 @@
 ##
 # @file  OutPortPahoPublisher.py
 # @brief OutPortPahoPublisher class
-# @date   2020/11/15
+# @date   2020/11/20
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -631,7 +631,7 @@ signal.signal(signal.SIGINT, OutPortPahoPublisher.signal_handler)
 #
 def OutPortPahoPublisherInit(self):
   factory = OpenRTM_aist.InPortConsumerFactory.instance()
-  factory.addFactory("paho_mqtt",
+  factory.addFactory("mqtt_cdr",
                      OutPortPahoPublisher,
                      OpenRTM_aist.Delete)
 ##

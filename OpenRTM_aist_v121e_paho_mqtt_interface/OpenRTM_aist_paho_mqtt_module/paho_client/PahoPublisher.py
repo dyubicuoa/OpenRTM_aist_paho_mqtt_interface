@@ -40,15 +40,15 @@ class PahoPublisher:
   def on_connect(self, mqttc, obj, flags, rc):
     #print("rc: "+str(rc))
     if(rc == 0):
-      print("connected to broker.")
+      print(" Connected to broker. ")
     else:
-      print("failed to connect to broker with code "+str(rc)+".")
+      print("Failed to connect to broker with code "+str(rc)+".")
 
   ##
   # @brief Call back function when succeeded to disconnect from broker
   #
   def on_disconnect(self, client, userdata, rc):
-    print("disconnected from broker with code "+str(rc)+".")
+    print(" Disconnected from broker with code "+str(rc)+". ")
 
   ##
   # @brief Initialize paho client

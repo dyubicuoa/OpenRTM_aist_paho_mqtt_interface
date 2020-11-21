@@ -2,8 +2,8 @@
 # -*- coding: euc-jp -*-
 
 ##
-# @file  OutPortPahoPubSecure.py
-# @brief OutPortPahoPubSecure class
+# @file   InPortPahoSubJson.py
+# @brief  InPortPahoSubJson class
 # @date   2020/11/20
 # @author Daishi Yoshino
 #
@@ -14,16 +14,16 @@
 # Originally under LGPL in OpenRTM-aist, http://www.openrtm.org/
 #
 
-from omniORB import *
+from omniORB import any
 import OpenRTM_aist
-import OpenRTM
-import RTC
+import OpenRTM__POA,OpenRTM
 import signal
 import os
 import time
 import threading
 import sys
-from OpenRTM_aist_paho_mqtt_module.paho_client.PahoPubSecure import PahoPubSecure
+from OpenRTM_aist_paho_mqtt_module.paho_client.PahoSubscriber import PahoSubscriber
+from OpenRTM_aist_paho_mqtt_module.reserializer.DataTypeFormat import *
 
 # There was a Ctrl+C interruption or not
 stop = False
@@ -31,10 +31,11 @@ stop = False
 called = False
 
 ##
-# @class OutPortPahoPubSecure
-# @brief OutPortPahoPubSecure class
+# @class InPortPahoSubJson
+# @brief InPortPahoSubJson class
 #
-class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
+class InPortPahoSubJson(OpenRTM_aist.InPortProvider, PahoSubscriber):
+    
   """
   """
 
@@ -63,9 +64,20 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
   #
   def __init__(self):
     global called
-    PahoPubSecure.__init__(self)
-    self._rtcout = OpenRTM_aist.Manager.instance().getLogbuf("OutPortPahoPubSecure")
-    self._properties = None
+    OpenRTM_aist.InPortProvider.__init__(self)
+    PahoSubscriber.__init__(self)
+
+    self.setInterfaceType("mqtt_json")
+    
+    self._buffer = None
+    self._profile = None
+    self._listeners = None
+
+    orb = OpenRTM_aist.Manager.instance().getORB()
+
+    callback = self.on_message
+    PahoSubscriber.set_on_message(self, callback)
+
     thread = threading.Thread(target=self.catch_signal)
     thread.daemon = True
     thread.start()
@@ -76,81 +88,139 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
   ##
   # @brief Destructor
   #
-  def __del__(self, CorbaConsumer=PahoPubSecure):
-    self._rtcout.RTC_PARANOID("~OutPortPahoPubSecure()")
+  def __del__(self):
     print("[disconnecting from MQTT broker start]")
-    PahoPubSecure.paho_disconnect(self)
+    PahoSubscriber.paho_disconnect(self)
     print("[disconnecting from MQTT broker end]")
-    PahoPubSecure.__del__(self)
+    PahoSubscriber.__del__(self)
     return
+
+  ##
+  # @brief Exit
+  #
+  def exit(self):
+    oid = OpenRTM_aist.Manager.instance().getPOA().servant_to_id(self)
+    OpenRTM_aist.Manager.instance().getPOA().deactivate_object(oid)
 
   ##
   # @brief Initializing configuration
   #
   def init(self, prop):
-    self._rtcout.RTC_TRACE("init()")
-    self._properties = prop
+    pass
+
+  ##
+  # @brief Set buffer
+  #
+  def setBuffer(self, buffer):
+    self._buffer = buffer
     return
 
   ##
-  # @brief Send data to the destination port
+  # @brief Set listener
   #
-  def put(self, data):
-    self._rtcout.RTC_PARANOID("put()")
+  def setListener(self, info, listeners):
+    self._profile = info
+    self._listeners = listeners
+    return
 
+  ##
+  # @brief Call back function when received MQTT message
+  #
+  def on_message(self, mqttc, obj, msg):
     try:
-      PahoPubSecure.paho_pub(self, data)
-      return self.PORT_OK
+      self._rtcout.RTC_PARANOID("InPortPahoSubJson.on_message()")
+      data = msg.payload
+
+      cdrmsg = self.__formatter.reserializeFromJsonToCdr(data)
+
+      if not self._buffer:
+        #self.onReceiverError(data)
+        self.onReceiverError(cdrmsg)
+        return OpenRTM.PORT_ERROR
+
+      self._rtcout.RTC_PARANOID("received data size: %d", len(data))
+
+      #self.onReceived(data)
+      self.onReceived(cdrmsg)
+
+      if not self._connector:
+        return OpenRTM.PORT_ERROR
+
+      #ret = self._connector.write(data)
+      ret = self._connector.write(cdrmsg)
+
+      #return self.convertReturn(ret, data)
+      return self.convertReturn(ret, cdrmsg)
+
     except:
-      self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
-      return self.CONNECTION_LOST
+      self._rtcout.RTC_TRACE(OpenRTM_aist.Logger.print_exception())
+      return OpenRTM.UNKNOWN_ERROR
 
   ##
-  # @brief Publish InterfaceProfile information
+  # @brief Return codes conversion
   #
-  def publishInterfaceProfile(self, properties):
-    return
+  def convertReturn(self, status, data):
+    if status == OpenRTM_aist.BufferStatus.BUFFER_OK:
+      self.onBufferWrite(data)
+      return OpenRTM.PORT_OK
+            
+    elif status == OpenRTM_aist.BufferStatus.BUFFER_ERROR:
+      self.onReceiverError(data)
+      return OpenRTM.PORT_ERROR
+
+    elif status == OpenRTM_aist.BufferStatus.BUFFER_FULL:
+      self.onBufferFull(data)
+      self.onReceiverFull(data)
+      return OpenRTM.BUFFER_FULL
+
+    elif status == OpenRTM_aist.BufferStatus.BUFFER_EMPTY:
+      return OpenRTM.BUFFER_EMPTY
+
+    elif status == OpenRTM_aist.BufferStatus.PRECONDITION_NOT_MET:
+      self.onReceiverError(data)
+      return OpenRTM.PORT_ERROR
+
+    elif status == OpenRTM_aist.BufferStatus.TIMEOUT:
+      self.onBufferWriteTimeout(data)
+      self.onReceiverTimeout(data)
+      return OpenRTM.BUFFER_TIMEOUT
+
+    else:
+      self.onReceiverError(data)
+      return OpenRTM.UNKNOWN_ERROR
 
   ##
-  # @brief Subscribe to the data sending notification
+  # @brief Publish Interface information
   #
-  def subscribeInterface(self, properties):
-    self._rtcout.RTC_TRACE("subscribeInterface()")
+  def publishInterface(self, properties):
+    self._rtcout.RTC_TRACE("publishInterace()")
 
-    if self.subscribePahoPubSecure(properties):
+    if self.subscribePahoSubJson(properties):
       return True
-    
-    return False
-    
-  ##
-  # @brief Unsubscribe the data send notification
-  #
-  def unsubscribeInterface(self, properties):
-    self._rtcout.RTC_TRACE("unsubscribeInterface()")
 
-    return
+    return False
 
   ##
   # @brief Find index of the properties
   #
   # acceptable properties:
-  #     {<key>, dataport.<key>, dataport.outport.<key>}
+  #     {<key>, dataport.<key>, dataport.inport.<key>}
   #
   def findProp(self, properties, key):
     index = OpenRTM_aist.NVUtil.find_index(properties, key)
     if index >= 0: return index
     index = OpenRTM_aist.NVUtil.find_index(properties, 'dataport.' + key)
     if index >= 0: return index
-    index = OpenRTM_aist.NVUtil.find_index(properties, 'dataport.outport.' + key)
+    index = OpenRTM_aist.NVUtil.find_index(properties, 'dataport.inport.' + key)
     if index >= 0: return index
     return -1
 
   ##
   # @brief Set properties relating to Paho Client
   #
-  def subscribePahoPubSecure(self, properties):
-    self._rtcout.RTC_TRACE("subscribePahoPubSecure()")
-    
+  def subscribePahoSubJson(self, properties):
+    self._rtcout.RTC_TRACE("subscribePahoSubJson()")
+
     PN_HOST = "host"
     PN_PORT = "msport"
     PN_KPALV = "kpalv"
@@ -158,13 +228,6 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     PN_QOS = "qos"
     PN_ID = "id"
     PN_CS = "cs"
-    PN_CACERT = "cacert"
-    PN_CLTCERT = "cltcert"
-    PN_CLTKEY = "cltkey"
-    PN_MAXIF = "maxif"
-    PN_RETAIN = "retain"
-    PN_WILL = "will"
-    PN_CLRRM = "clrrm"
 
     index0 = self.findProp(properties, PN_HOST)
     index1 = self.findProp(properties, PN_PORT)
@@ -173,29 +236,14 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
     index4 = self.findProp(properties, PN_QOS)
     index5 = self.findProp(properties, PN_ID)
     index6 = self.findProp(properties, PN_CS)
-    index7 = self.findProp(properties, PN_CACERT)
-    index8 = self.findProp(properties, PN_CLTCERT)
-    index9 = self.findProp(properties, PN_CLTKEY)
-    indexA = self.findProp(properties, PN_MAXIF)
-    indexB = self.findProp(properties, PN_RETAIN)
-    indexC = self.findProp(properties, PN_WILL)
-    indexD = self.findProp(properties, PN_CLRRM)
 
     tmp_host = "localhost"
-    tmp_port = 8883
+    tmp_port = 1883
     tmp_kpalv = 60
     tmp_topic = "test"
     tmp_qos = 0
     tmp_id = ""
     tmp_cs = True
-    tmp_cacert = "./ca.crt"
-    tmp_cltcert = "./client.crt"
-    tmp_cltkey = "./client.key"
-    tmp_maxif = 20
-    tmp_retain = False
-    tmp_will = False
-    tmp_willmsg = None
-    clear_retained_msg = False
 
     if index0 < 0:
       print("Server address not found. Default server address '" + tmp_host + "' is used.")
@@ -219,7 +267,7 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
           return False
         tmp_port = int(str_port)
         if tmp_port < 0 or tmp_port > 65535:
-          tmp_port = 8883
+          tmp_port = 1883
         print("Port: " + str(tmp_port))
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
@@ -293,137 +341,63 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
       except:
         self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
 
-    if index7 < 0:
-      print("Path to CA certificate file not found. Default path '" + tmp_cacert + "' is used.")
+    self.generateDataTypeInfo(properties)
+
+    if self.__datatype and self.__endian:
+      self.generateFormatter(self.__datatype, self.__endian)
     else:
-      try:
-        tmp_cacert = any.from_any(properties[index7].value, keep_structs=True)
-        if not tmp_cacert:
-          self._rtcout.RTC_ERROR("Path to CA certificate file has no string.")
-          return False
-        print("Path to CA certificate file: " + tmp_cacert)
-      except:
-        self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
-
-    if index8 < 0:
-      print("Path to client certificate file not found. Default path '" + tmp_cltcert + "' is used.")
-    else:
-      try:
-        tmp_cltcert = any.from_any(properties[index8].value, keep_structs=True)
-        if not tmp_cltcert:
-          self._rtcout.RTC_ERROR("Path to client certificate file has no string.")
-          return False
-        print("Path to client certificate file: " + tmp_cltcert)
-      except:
-        self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
-
-    if index9 < 0:
-      print("Path to client key file not found. Default path '" + tmp_cltkey + "' is used.")
-    else:
-      try:
-        tmp_cltkey = any.from_any(properties[index9].value, keep_structs=True)
-        if not tmp_cltkey:
-          self._rtcout.RTC_ERROR("Path to client key file has no string.")
-          return False
-        print("Path to client key file: " + tmp_cltkey)
-      except:
-        self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
-
-    if indexA < 0:
-      print("MaxInflight not found. Default max_inflight '" + str(tmp_maxif) + "' is used.")
-    else:
-      try:
-        str_maxif = any.from_any(properties[indexA].value, keep_structs=True)
-        if not str_maxif:
-          self._rtcout.RTC_ERROR("MaxInflight has no string.")
-          return False
-        tmp_maxif = int(str_maxif)
-        if tmp_maxif < 0 or tmp_maxif > 65535:
-          tmp_maxif = 20
-        print("max_inflight: " + str(tmp_maxif))
-      except:
-        self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
-
-    if indexB < 0:
-      print("Retained not found. Default retained '" + str(tmp_retain) + "' is used.")
-    else:
-      try:
-        str_retain = any.from_any(properties[indexB].value, keep_structs=True)
-        if not str_retain:
-          self._rtcout.RTC_ERROR("Retained has no string.")
-          return False
-        if str_retain == "True" or str_retain == "true" or str_retain == "TRUE" or str_retain == "t" or str_retain == "T" or str_retain == "1":
-          tmp_retain = True
-        print("Retained: " + str(tmp_retain))
-      except:
-        self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
-
-    if indexC < 0:
-      print("Last will not found. Default last will '" + str(tmp_will) + "' is used.")
-    else:
-      try:
-        str_will = any.from_any(properties[indexC].value, keep_structs=True)
-        if not str_will:
-          self._rtcout.RTC_ERROR("Last will has no string.")
-          return False
-        if str_will == "True" or str_will == "true" or str_will == "TRUE" or str_will == "t" or str_will == "T" or str_will == "1":
-          tmp_will = True
-        print("Last will: " + str(tmp_will))
-      except:
-        self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
-
-    if indexD >= 0:
-      try:
-        str_clrrm = any.from_any(properties[indexD].value, keep_structs=True)
-        if not str_clrrm:
-          self._rtcout.RTC_ERROR("Clear_retained_message has no string.")
-          return False
-        if str_clrrm == "True" or str_clrrm == "true" or str_clrrm == "TRUE" or str_clrrm == "t" or str_clrrm == "T" or str_clrrm == "1":
-          clear_retained_msg = True
-      except:
-        self._rtcout.RTC_ERROR(OpenRTM_aist.Logger.print_exception())
-
-    if tmp_will == True:
-      self.generateDataTypeInfo(properties)
-      if self.__datatype and self.__endian:
-        tmp_willmsg = cdrMarshal(any.to_any(self.__datatype).typecode(), self.__datatype, self.__endian)
-      else:
-        tmp_willmsg = None
-        print("DataType or Endian is unknown, therefore 'Will' function does not work.")
+      self._rtcout.RTC_ERROR("DataType or Endian is unknown.")
+      return False
 
     print("[connecting to MQTT broker start]")
-    PahoPubSecure.paho_initialize(self, tmp_id, tmp_cs, tmp_maxif, tmp_topic, tmp_qos, tmp_retain, tmp_willmsg)
-    PahoPubSecure.paho_secure_set(self, tmp_cacert, tmp_cltcert, tmp_cltkey)
-    PahoPubSecure.paho_connect(self, tmp_host, tmp_port, tmp_kpalv)
+    PahoSubscriber.paho_initialize(self, tmp_id, tmp_cs, tmp_topic, tmp_qos)
+    PahoSubscriber.paho_connect(self, tmp_host, tmp_port, tmp_kpalv)
     print("[connecting to MQTT broker end]")
-
-    if clear_retained_msg == True:
-      PahoPubSecure.paho_pub_nullmsg(self)
-      print("* Cleared retained message from MQTT broker.")
 
     return True
 
   ##
-  # @brief Return codes conversion
+  # @brief Connector data listener functions
   #
-  def convertReturnCode(self, ret):
-    if ret == OpenRTM.PORT_OK:
-      return self.PORT_OK
+  def onBufferWrite(self, data):
+    if self._listeners is not None and self._profile is not None:
+      self._listeners.connectorData_[OpenRTM_aist.ConnectorDataListenerType.ON_BUFFER_WRITE].notify(self._profile, data)
+    return
 
-    elif ret == OpenRTM.PORT_ERROR:
-      return self.PORT_ERROR
+  def onBufferFull(self, data):
+    if self._listeners is not None and self._profile is not None:
+      self._listeners.connectorData_[OpenRTM_aist.ConnectorDataListenerType.ON_BUFFER_FULL].notify(self._profile, data)
+    return
 
-    elif ret == OpenRTM.BUFFER_FULL:
-      return self.SEND_FULL
+  def onBufferWriteTimeout(self, data):
+    if self._listeners is not None and self._profile is not None:
+      self._listeners.connectorData_[OpenRTM_aist.ConnectorDataListenerType.ON_BUFFER_WRITE_TIMEOUT].notify(self._profile, data)
+    return
 
-    elif ret == OpenRTM.BUFFER_TIMEOUT:
-      return self.SEND_TIMEOUT
+  def onBufferWriteOverwrite(self, data):
+    if self._listeners is not None and self._profile is not None:
+      self._listeners.connectorData_[OpenRTM_aist.ConnectorDataListenerType.ON_BUFFER_OVERWRITE].notify(self._profile, data)
+    return
 
-    elif ret == OpenRTM.UNKNOWN_ERROR:
-      return self.UNKNOWN_ERROR
+  def onReceived(self, data):
+    if self._listeners is not None and self._profile is not None:
+      self._listeners.connectorData_[OpenRTM_aist.ConnectorDataListenerType.ON_RECEIVED].notify(self._profile, data)
+    return
 
-    else:
-      return self.UNKNOWN_ERROR
+  def onReceiverFull(self, data):
+    if self._listeners is not None and self._profile is not None:
+      self._listeners.connectorData_[OpenRTM_aist.ConnectorDataListenerType.ON_RECEIVER_FULL].notify(self._profile, data)
+    return
+
+  def onReceiverTimeout(self, data):
+    if self._listeners is not None and self._profile is not None:
+      self._listeners.connectorData_[OpenRTM_aist.ConnectorDataListenerType.ON_RECEIVER_TIMEOUT].notify(self._profile, data)
+    return
+
+  def onReceiverError(self, data):
+    if self._listeners is not None and self._profile is not None:
+      self._listeners.connectorData_[OpenRTM_aist.ConnectorDataListenerType.ON_RECEIVER_ERROR].notify(self._profile, data)
+    return
 
   ##
   # @brief Generate information about datatype and endian
@@ -667,24 +641,163 @@ class OutPortPahoPubSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
           self.__datatype = None
           print("  The datatype does not support 'Will' function.")
 
+  ##
+  # @brief Generate a formatter covering two serialization formats
+  #
+  def generateFormatter(self, datatype, endian):
+    tmp_dtname = any.to_any(datatype).typecode().name()
+
+    if tmp_dtname == any.to_any(RTC.Time).typecode().name():
+      self.__formatter = TimeFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedState).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedShort).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedLong).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedUShort).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedULong).typecode().name() or\
+         tmp_dtname == any.to_any(RTC.TimedFloat).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedDouble).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedChar).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedWChar).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedBoolean).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedOctet).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedString).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedWString).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedShortSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedLongSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedUShortSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedULongSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedFloatSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedDoubleSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedCharSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedWCharSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedBooleanSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedOctetSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedStringSeq).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedWStringSeq).typecode().name():
+      self.__formatter = BasicDataTypeFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.RGBColour).typecode().name():
+      self.__formatter = RGBColourFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Point2D).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.Vector2D).typecode().name():
+      self.__formatter = PointOrVector2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Pose2D).typecode().name():
+      self.__formatter = Pose2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Velocity2D).typecode().name():
+      self.__formatter = Velocity2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Acceleration2D).typecode().name():
+      self.__formatter = Acceleration2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.PoseVel2D).typecode().name():
+      self.__formatter = PoseVel2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Size2D).typecode().name():
+      self.__formatter = Size2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Geometry2D).typecode().name():
+      self.__formatter = Geometry2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Covariance2D).typecode().name():
+      self.__formatter = Covariance2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.PointCovariance2D).typecode().name():
+      self.__formatter = PointCovariance2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Carlike).typecode().name():
+      self.__formatter = CarlikeFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.SpeedHeading2D).typecode().name():
+      self.__formatter = SpeedHeading2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Point3D).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.Vector3D).typecode().name():
+      self.__formatter = PointOrVector3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Orientation3D).typecode().name():
+      self.__formatter = Orientation3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Pose3D).typecode().name():
+      self.__formatter = Pose3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Velocity3D).typecode().name():
+      self.__formatter = Velocity3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.AngularVelocity3D).typecode().name():
+      self.__formatter = AngularVelocity3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Acceleration3D).typecode().name():
+      self.__formatter = Acceleration3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.AngularAcceleration3D).typecode().name():
+      self.__formatter = AngularAcceleration3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.PoseVel3D).typecode().name():
+      self.__formatter = PoseVel3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Size3D).typecode().name():
+      self.__formatter = Size3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Geometry3D).typecode().name():
+      self.__formatter = Geometry3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.Covariance3D).typecode().name():
+      self.__formatter = Covariance3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.SpeedHeading3D).typecode().name():
+      self.__formatter = SpeedHeading3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.OAP).typecode().name():
+      self.__formatter = OAPFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedRGBColour).typecode().name():
+      self.__formatter = TimedRGBColourFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPoint2D).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedVector2D).typecode().name():
+      self.__formatter = TimedPointOrVector2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPose2D).typecode().name():
+      self.__formatter = TimedPose2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedVelocity2D).typecode().name():
+      self.__formatter = TimedVelocity2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedAcceleration2D).typecode().name():
+      self.__formatter = TimedAcceleration2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPoseVel2D).typecode().name():
+      self.__formatter = TimedPoseVel2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedSize2D).typecode().name():
+      self.__formatter = TimedSize2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedGeometry2D).typecode().name():
+      self.__formatter = TimedGeometry2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedCovariance2D).typecode().name():
+      self.__formatter = TimedCovariance2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPointCovariance2D).typecode().name():
+      self.__formatter = TimedPointCovariance2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedCarlike).typecode().name():
+      self.__formatter = TimedCarlikeFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedSpeedHeading2D).typecode().name():
+      self.__formatter = TimedSpeedHeading2DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPoint3D).typecode().name() or \
+         tmp_dtname == any.to_any(RTC.TimedVector3D).typecode().name():
+      self.__formatter = TimedPointOrVector3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedOrientation3D).typecode().name():
+      self.__formatter = TimedOrientation3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPose3D).typecode().name():
+      self.__formatter = TimedPose3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedVelocity3D).typecode().name():
+      self.__formatter = TimedVelocity3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedAngularVelocity3D).typecode().name():
+      self.__formatter = TimedAngularVelocity3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedAcceleration3D).typecode().name():
+      self.__formatter = TimedAcceleration3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedAngularAcceleration3D).typecode().name():
+      self.__formatter = TimedAngularAcceleration3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedPoseVel3D).typecode().name():
+      self.__formatter = TimedPoseVel3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedSize3D).typecode().name():
+      self.__formatter = TimedSize3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedGeometry3D).typecode().name():
+      self.__formatter = TimedGeometry3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedCovariance3D).typecode().name():
+      self.__formatter = TimedCovariance3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedSpeedHeading3D).typecode().name():
+      self.__formatter = TimedSpeedHeading3DFormat(datatype, endian)
+    elif tmp_dtname == any.to_any(RTC.TimedOAP).typecode().name():
+      self.__formatter = TimedOAPFormat(datatype, endian)
+
 ##
 # @brief Catch ctrl+c interruption
 #
-signal.signal(signal.SIGINT, OutPortPahoPubSecure.signal_handler)
+signal.signal(signal.SIGINT, InPortPahoSubJson.signal_handler)
 
 ##
-# @brief Initialize OutPortPahoPubSecure module
+# @brief Initialize InPortPahoSubJson module
 #
-def OutPortPahoPubSecureInit(self):
-  factory = OpenRTM_aist.InPortConsumerFactory.instance()
-  factory.addFactory("mqtts_cdr",
-                     OutPortPahoPubSecure,
+def InPortPahoSubJsonInit(self):
+  factory = OpenRTM_aist.InPortProviderFactory.instance()
+  factory.addFactory("mqtt_json",
+                     InPortPahoSubJson,
                      OpenRTM_aist.Delete)
 
 ##
-# @brief Register OutPortPahoPubSecure module
+# @brief Register InPortPahoSubJson module
 #
 def registerModule():
-  print("[Secure Paho Publisher initialization start]")
-  OutPortPahoPubSecureInit()
-  print("[Secure Paho Publisher initialization end]")
+  print("[Paho Subscriber initialization start]")
+  InPortPahoSubJsonInit()
+  print("[Paho Subscriber initialization end]")

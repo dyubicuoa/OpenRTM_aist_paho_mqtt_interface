@@ -4,7 +4,7 @@
 ##
 # @file  OutPortPahoPubSecure.py
 # @brief OutPortPahoPubSecure class
-# @date   2020/11/15
+# @date   2020/11/20
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -677,7 +677,7 @@ signal.signal(signal.SIGINT, OutPortPahoPubSecure.signal_handler)
 #
 def OutPortPahoPubSecureInit(self):
   factory = OpenRTM_aist.InPortConsumerFactory.instance()
-  factory.addFactory("paho_mqtts",
+  factory.addFactory("mqtts_cdr",
                      OutPortPahoPubSecure,
                      OpenRTM_aist.Delete)
 
