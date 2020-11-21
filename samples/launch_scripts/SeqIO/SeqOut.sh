@@ -59,16 +59,16 @@ manager.modules.preload: InPortPahoSubscriber.py, OutPortPahoPublisher.py
 
 manager.components.preactivation: SequenceOutComponent0
 manager.components.preconnect: \\
-    SequenceOutComponent0.Octet?interface_type=paho_mqtt&host=${HOSTNAME}&topic=octet, \\
-    SequenceOutComponent0.Short?interface_type=paho_mqtt&host=${HOSTNAME}&topic=short, \\
-    SequenceOutComponent0.Long?interface_type=paho_mqtt&host=${HOSTNAME}&topic=long, \\
-    SequenceOutComponent0.Float?interface_type=paho_mqtt&host=${HOSTNAME}&topic=float, \\
-    SequenceOutComponent0.Double?interface_type=paho_mqtt&host=${HOSTNAME}&topic=double, \\
-    SequenceOutComponent0.OctetSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=octetseq, \\
-    SequenceOutComponent0.ShortSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=shortseq, \\
-    SequenceOutComponent0.LongSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=longseq, \\
-    SequenceOutComponent0.FloatSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=floatseq, \\
-    SequenceOutComponent0.DoubleSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=doubleseq
+    SequenceOutComponent0.Octet?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=octet, \\
+    SequenceOutComponent0.Short?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=short, \\
+    SequenceOutComponent0.Long?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=long, \\
+    SequenceOutComponent0.Float?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=float, \\
+    SequenceOutComponent0.Double?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=double, \\
+    SequenceOutComponent0.OctetSeq?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=octetseq, \\
+    SequenceOutComponent0.ShortSeq?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=shortseq, \\
+    SequenceOutComponent0.LongSeq?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=longseq, \\
+    SequenceOutComponent0.FloatSeq?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=floatseq, \\
+    SequenceOutComponent0.DoubleSeq?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=doubleseq
 EOF
 
 #############

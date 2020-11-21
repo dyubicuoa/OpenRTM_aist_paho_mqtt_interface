@@ -59,7 +59,7 @@ manager.modules.preload: InPortPahoSubscriber.py, OutPortPahoPublisher.py
 
 manager.components.preactivation: ConsoleIn0
 manager.components.preconnect: \\
-    ConsoleIn0.out?interface_type=paho_mqtt&host=${HOSTNAME}&topic=long
+    ConsoleIn0.out?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=long
 EOF
 
 #############

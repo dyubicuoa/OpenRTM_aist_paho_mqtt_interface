@@ -59,7 +59,7 @@ manager.modules.preload: InPortPahoSubscriber.py, OutPortPahoPublisher.py
 
 manager.components.preactivation: SliderComp0
 manager.components.preconnect: \\
-    SliderComp0.slider?interface_type=paho_mqtt&host=${HOSTNAME}&topic=floatseq
+    SliderComp0.slider?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=floatseq
 EOF
 
 #############

@@ -59,16 +59,16 @@ manager.modules.preload: InPortPahoSubscriber.py, OutPortPahoPublisher.py
 
 manager.components.preactivation: SequenceInComponent0
 manager.components.preconnect: \\
-    SequenceInComponent0.Octet?interface_type=paho_mqtt&host=${HOSTNAME}&topic=octet, \\
-    SequenceInComponent0.Short?interface_type=paho_mqtt&host=${HOSTNAME}&topic=short, \\
-    SequenceInComponent0.Long?interface_type=paho_mqtt&host=${HOSTNAME}&topic=long, \\
-    SequenceInComponent0.Float?interface_type=paho_mqtt&host=${HOSTNAME}&topic=float, \\
-    SequenceInComponent0.Double?interface_type=paho_mqtt&host=${HOSTNAME}&topic=double, \\
-    SequenceInComponent0.OctetSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=octetseq, \\
-    SequenceInComponent0.ShortSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=shortseq, \\
-    SequenceInComponent0.LongSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=longseq, \\
-    SequenceInComponent0.FloatSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=floatseq, \\
-    SequenceInComponent0.DoubleSeq?interface_type=paho_mqtt&host=${HOSTNAME}&topic=doubleseq
+    SequenceInComponent0.Octet?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=octet, \\
+    SequenceInComponent0.Short?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=short, \\
+    SequenceInComponent0.Long?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=long, \\
+    SequenceInComponent0.Float?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=float, \\
+    SequenceInComponent0.Double?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=double, \\
+    SequenceInComponent0.OctetSeq?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=octetseq, \\
+    SequenceInComponent0.ShortSeq?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=shortseq, \\
+    SequenceInComponent0.LongSeq?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=longseq, \\
+    SequenceInComponent0.FloatSeq?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=floatseq, \\
+    SequenceInComponent0.DoubleSeq?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=doubleseq
 EOF
 
 #############

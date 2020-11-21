@@ -59,7 +59,7 @@ manager.modules.preload: InPortPahoSubscriber.py, OutPortPahoPublisher.py
 
 manager.components.preactivation: TkMotorComp0
 manager.components.preconnect: \\
-    TkMotorComp0.vel?interface_type=paho_mqtt&host=${HOSTNAME}&topic=floatseq
+    TkMotorComp0.vel?interface_type=mqtt_cdr&host=${HOSTNAME}&topic=floatseq
 EOF
 
 #############
