@@ -13,6 +13,7 @@ MQTT通信モジュールを通して、IoTシステム構築ミドルウェア�
 ## Target users
 * OpenRTM-aistのユーザでMQTTの初学者が、RTシステムを通してMQTTによる通信システムを試しに体験してみたい方
 * OpenRTM-aistを用いて手軽にインターネット上のシステム、すなわちIoT（Internet of Things）システムやロボットシステムのインターネット化であるIoRT（Internet of Robotic Things）システムを構築したい方
+* OpenRTM-aistで構築したRTシステムと、MQTTクライアントライブラリから構築した外部のMQTTシステムや、AWS等が提供するクラウドサービスと連携を取りたい方
 
 ## Directory structure
 リポジトリのフォルダ構成は以下の通り。
@@ -39,20 +40,35 @@ OpenRTM_aist_paho_mqtt_interface
 
 ## Features
 
-MQTT通信モジュールは以下の4種類で構成されています。なお、通信モジュールにおけるInterface Typeとは、ロボットシステムを構成するRTコンポーネントのデータポート上で認識される通信インタフェース名を示しています。OpenRTM-aistにおけるInterface Typeのdefaultは'corba_cdr'ですが、下記MQTT用の通信インタフェース名を選択することで、データポートの通信をCORBAからMQTTに変えることが可能となります。
+MQTT通信モジュールは以下の8つで構成されており、メッセージ中のPayloadのシリアライズ形式の違いから、大きくCDRシリアライズ版モジュールとJSONシリアライズ版モジュールの２種類に大別できます。それぞれ異なるPayloadシリアライズ形式を採用しているため、CDRシリアライズ版モジュール間、もしくはJSONシリアライズ版モジュール間でのみMQTT通信が成立します。このことから、CDRシリアライズ版モジュールとJSONシリアライズ版モジュール間の通信はできませんのでご注意ください。
 
+なお、通信モジュールにおける'Interface Type'とは、ロボットシステムを構成するRTコンポーネントのデータポート上で認識される通信インタフェース名を示しています。OpenRTM-aistにおけるInterface Typeのdefaultは'corba_cdr'ですが、下記MQTT用の通信インタフェース名を選択することで、データポートの通信をCORBAからMQTTに変えることが可能となります。
+
+**CDRシリアライズ版MQTT通信モジュール（全データ型に対応）**
 || MQTT通信モジュール名 | Interface Type | 説明 |
 | :-- | :-- | :-- | :-- |
-| (1) | **OutPortPahoPublisher** | 'paho_mqtt' | OutPort用MQTTデータ送信モジュール。セキュア通信機能なし |
-| (2) | **InPortPahoSubscriber** | 'paho_mqtt' | InPort用MQTTデータ受信モジュール。セキュア通信機能なし |
-| (3) | **OutPortPahoPubSecure** | 'paho_mqtts' | OutPort用MQTTデータ送信モジュール。TLSによるセキュア通信機能付き |
-| (4) | **InPortPahoSubSecure** | 'paho_mqtts' | InPort用MQTTデータ受信モジュール。TLSによるセキュア通信機能付き|
+| (1) | **OutPortPahoPublisher** | 'mqtt_cdr' | OutPort用MQTTデータ送信モジュール。セキュア通信機能なし |
+| (2) | **InPortPahoSubscriber** | 'mqtt_cdr' | InPort用MQTTデータ受信モジュール。セキュア通信機能なし |
+| (3) | **OutPortPahoPubSecure** | 'mqtts_cdr' | OutPort用MQTTデータ送信モジュール。TLSによるセキュア通信機能付き |
+| (4) | **InPortPahoSubSecure** | 'mqtts_cdr' | InPort用MQTTデータ受信モジュール。TLSによるセキュア通信機能付き|
 
-いずれの通信モジュールもVersion3.1.1のMQTTを扱ってます。(1)および(2)はセキュア通信機能がないため、ローカルマシン内やローカルネットワーク内での通信用途限定です。インターネット上でシステムを構築する場合はセキュア通信機能付きの(3)および(4)を使用してください。  
+**JSONシリアライズ版MQTT通信モジュール（BasicDataTypesとExtendedDataTypesのみに対応）**
+|| MQTT通信モジュール名 | Interface Type | 説明 |
+| :-- | :-- | :-- | :-- |
+| (5) | **OutPortPahoPubJson** | 'mqtt_json' | OutPort用MQTTデータ送信モジュール。セキュア通信機能なし |
+| (6) | **InPortPahoSubJson** | 'mqtt_json' | InPort用MQTTデータ受信モジュール。セキュア通信機能なし |
+| (7) | **OutPortPahoPubJsonSecure** | 'mqtts_json' | OutPort用MQTTデータ送信モジュール。TLSによるセキュア通信機能付き |
+| (8) | **InPortPahoSubJsonSecure** | 'mqtts_json' | InPort用MQTTデータ受信モジュール。TLSによるセキュア通信機能付き|
+
+CDRシリアライズ版モジュールはOpenRTM-aistにおけるベースのシリアライズ（マーシャル）形式であるCORBA CDR（Common Data Representation）でシリアライズされたデータをそのままPayloadとして用います。CDRシリアライズが採用されている現行の外部システムは稀であることから、CDRシリアライズ版モジュールはRTシステムにおけるデータポート間の通信にしか利用できず、RTシステム外部の一般のMQTTシステムとの連携はできません。しかしながら、RTシステム中のデータポート間の通信においては、データ処理が軽いことから**JSONシリアライズ版モジュールよりも通信上のパフォーマンスは高くなります**。ですので、RTシステム内でMQTT通信が完結するのであれば、CDRシリアライズ版モジュールの使用をおすすめします。なぜCDRシリアライズ版の方がJSONシリアライズ版よりもデータ処理が軽くなるのか技術的な背景は、最下部のNoteにまとめていますので、そちらを参考にしてください。
+
+これに対してJSONシリアライズ版モジュールは、データポート間の通信パフォーマンスはCDRシリアライズ版モジュールに劣後するものの、**RTシステム外部のMQTTシステムやAWS等が提供するクラウドサービスとの連携が可能**になる等、拡張性が増します。すなわちJSONシリアライズ版モジュールを用いることで、**RTシステムの枠を超えたシステム構築が可能**となります。試しにJSONシリアライズ版モジュールを用いてRTコンポーネントのOutPortからPublishしたデータを、MQTTクライアントライブラリを用いて構築した通常のMQTTクライアントでSubscribeしてみると、JSON形式でシリアライズされたTextデータを取得できることがわかります。これとは逆にJSON形式でシリアライズされたデータを通常のMQTTクライアントからPublishし、RTコンポーネントのInPortでSubscribeすることもできます。以上から、JSONシリアライズ版モジュールは、外部システムとの連携が必要等、RTシステム内でMQTT通信が収まらないケースでの使用が適していると言えます。
+
+CDRシリアライズ版とJSONシリアライズ版いずれの通信モジュールもVersion3.1.1のMQTTプロトコルを採用しており、セキュア通信機能のないものとセキュア通信機能付きのものを備えています。モジュール名の接尾辞に'Secure'と表記されているものがセキュア通信対応となります。すなわち、(1),(2),(5)または(6)のモジュールはセキュア通信機能がなく平文での通信となるため、ローカルマシン内やローカルネットワーク内での通信用に限定されます。インターネット等不特定多数の方が利用するネットワーク上にシステムを構築する場合は、セキュア通信機能付きの(3),(4),(7)または(8)のモジュールを使用してください。  
 
 各通信モジュールのプロパティとそのdefault値は以下のとおりです。
 
-**(1) OutPortPahoPublisher** および **(2) InPortPahoSubscriber**  
+**(1) OutPortPahoPublisher, (2) InPortPahoSubscriber, (5) OutPortPahoPubJson** および **(6) InPortPahoSubJson**
 ||Name (Key)|Default value| 説明 |
 | :-- | :-- | :-- | :-- |
 | 1. | host | 'localhost' | エンドポイントとなるBrokerのアドレス（FQDNまたはIPアドレス） |
@@ -67,7 +83,7 @@ MQTT通信モジュールは以下の4種類で構成されています。なお
 | 10. | clrrm | False | Clear retained message。RetainによりBrokerに保持された最新メッセージは、明示的に削除されない限り保持が継続する。True指定でBrokerに保持された最新メッセージを削除する。Retainedメッセージの削除は、OutPortPahoPublisherモジュールからのみ可能 |
 | 11. | will | False | MQTT ver.3.1.1におけるWill（遺言）の機能を使用するか否か。Willを有効化（True）すると、Publisher（OutPort）側で何らかの障害が発生し、正常にdisconnectせずにBrokerから切断された場合に、BrokerからSubscriber（InPort）に対して予め指定していたWillメッセージが即座に送信される。WillメッセージはRTMにおける各種データ型の各項目に数値0（文字列の場合は文字0、Booleanの場合はFalse）が入力されたものとなる。現時点では基本データ型（BasicDataTypes）と拡張データ型（ExtendedDataTypes）のみに対応。WillはOutPortPahoPublisherモジュールのみ設定可能。*※ rtc.confでpreconnect指定により事前にWillを設定する場合はデータ型の指定も必要。詳細は下記Noteを参照のこと* |
 
-**(3) OutPortPahoPubSecure** および **(4) InPortPahoSubSecure**  
+**(3) OutPortPahoPubSecure, (4) InPortPahoSubSecure, (7) OutPortPahoPubJsonSecure** および **(8) InPortPahoSubJsonSecure**
 ||Name (Key)|Default value| 説明 |
 | :-- | :-- | :-- | :-- |
 | 1. | host | 'localhost' | エンドポイントとなるBrokerのアドレス（FQDNまたはIPアドレス） |
@@ -90,7 +106,7 @@ MQTT通信モジュールは以下の4種類で構成されています。なお
 # rtc.conf
 ：
 # MQTT BrokerへのOutPortの自動接続
-manager.components.preconnect: ConsoleIn0.out?interface_type=paho_mqtt&host=127.0.0.1&topic=hoge
+manager.components.preconnect: ConsoleIn0.out?interface_type=mqtt&host=127.0.0.1&topic=hoge
 ```
 
 プロパティの事前設定を利用しない場合、もしくはver.1.2.0より前のバージョンのOpenRTM-aistを利用されている場合は、プロパティは以下のようににロボットシステムの構築ツールであるRTSystemEditor上で、RTコンポーネントにおけるデータポートの接続を行う際に表示されるConnector Profileダイアログの"詳細"からKey-Value形式で直接入力することになります。いくつかのKeyを選択し、順不同で入力可能なのはrtc.confにおける事前設定と同様です。
@@ -202,7 +218,7 @@ $ sudo systemctl status mosquitto.service
 ### 『プロパティの事前設定とMQTT Brokerへの自動接続によりRTシステムを構築する手順』
 
 #### (1) rtc.confでのモジュール指定とプロパティ設定
-MQTT通信モジュールをOpenRTM-aistに動的に組み込むには、MQTTで通信を行いたいRTコンポーネントのrtc.confにおいて、"**manager.modules.load_path:**"にてMQTT通信モジュールへのpathを、"**manager.modules.preload:**"にてモジュール名を指定する必要があります。OutPortはデータを送信する側なので、OutPortPahoPublisherもしくはOutPortPahoPubSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、OutPortPahoSubscriberもしくはOutPortPahoSubSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
+MQTT通信モジュールをOpenRTM-aistに動的に組み込むには、MQTTで通信を行いたいRTコンポーネントのrtc.confにおいて、"**manager.modules.load_path:**"にてMQTT通信モジュールへのpathを、"**manager.modules.preload:**"にてモジュール名を指定する必要があります。OutPortはデータを送信する側なので、(1) OutPortPahoPublisher, (3) OutPortPahoPubSecure, (5) OutPortPahoPubJsonもしくは(7) OutPortPahoPubJsonSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、(2) InPortPahoSubscriber, (4) InPortPahoSubSecure, (6) InPortPahoSubJsonもしくは(8) InPortPahoSubJsonSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
 
 続いて、プロパティの設定です。モジュールのプロパティをrtc.confで事前に設定し、RTコンポーネントの実行と同時に対象のデータポートをMQTT Brokerに自動的に接続するには"**manager.components.preconnect:**"指定を利用します。preconnectによるMQTT通信インタフェースや関連するプロパティ等の設定方法は以下の通りです。
 ```bash
@@ -215,7 +231,7 @@ manager.components.preconnect: \
 manager.components.preactivation: {RTコンポーネント名}
 ```
 
-例えば、RTコンポーネントConsoleInにおけるOutPort名"out"でInterface Typeとしてセキュア通信機能なしのMQTT通信インタフェースを選択した上で、BrokerエンドポイントアドレスとTopic名の各プロパティを設定し、Brokerへの自動接続を行いたい場合は、以下のようにrtc.confに追記します。
+例えば、RTコンポーネントConsoleInにおけるOutPort名"out"でInterface Typeとしてセキュア通信機能なしのCDRシリアライズ版MQTT通信インタフェースを選択した上で、BrokerエンドポイントアドレスとTopic名の各プロパティを設定し、Brokerへの自動接続を行いたい場合は、以下のようにrtc.confに追記します。
 ```bash
 # rtcPrePub.conf
 ：
@@ -224,10 +240,10 @@ manager.modules.load_path: /usr/local/lib/python3.6/dist-packages/OpenRTM_aist_p
 # MQTT通信モジュール名
 manager.modules.preload: OutPortPahoPublisher.py
 # MQTT BrokerへのOutPortの自動接続
-manager.components.preconnect: ConsoleIn0.out?interface_type=paho_mqtt&host=127.0.0.1&topic=hoge
+manager.components.preconnect: ConsoleIn0.out?interface_type=mqtt_cdr&host=127.0.0.1&topic=hoge
 ```
 
-RTコンポーネントConsoleOutにおけるInPort名"in"でInterface Typeとしてセキュア通信機能なしのMQTT通信インタフェースを選択した上で、QoSとTopicの各プロパティを設定し、Brokerへの自動接続とRTコンポーネントの自動Activate化を行いたい場合は以下の通り。
+RTコンポーネントConsoleOutにおけるInPort名"in"でInterface Typeとしてセキュア通信機能なしのCDRシリアライズ版MQTT通信インタフェースを選択した上で、QoSとTopicの各プロパティを設定し、Brokerへの自動接続とRTコンポーネントの自動Activate化を行いたい場合は以下の通り。
 ```bash
 # rtcPreSub.conf
 ：
@@ -238,10 +254,24 @@ manager.modules.preload: InPortPahoSubscriber.py
 # RTコンポーネントの自動Activate化
 manager.components.preactivation: ConsoleOut0
 # MQTT BrokerへのInPortの自動接続
-manager.components.preconnect: ConsoleOut0.in?interface_type=paho_mqtt&qos=1&topic=hoge
+manager.components.preconnect: ConsoleOut0.in?interface_type=mqtt_cdr&qos=1&topic=hoge
 ```
 
-一つのRTコンポーネント（RTC名：PahoMqttTest）にOutPort(ポート名：out）もInPort（ポート名：in）も備わっており、そのどちらもセキュア通信機能付きのMQTT通信インタフェースを通してデータの送受信を行いたい場合は以下のように","で区切ってモジュール名を2つ指定します。どちらのデータポートもBrokerへの自動接続を行いたい場合も同様に","で区切って、各データポートの通信インタフェースや関連するプロパティを設定します。
+RTコンポーネントConsoleInにおけるOutPort名"out"でInterface Typeとしてセキュア通信機能なしのJSONシリアライズ版MQTT通信インタフェースを選択した上で、Retain（保持）とWill（遺言）の機能を2つとも使用したい場合は以下の通り。なお、TrueやFalseの指定は大文字でも小文字でも頭文字だけ（'t','T','f'または'F'）でも通ります。
+```bash
+# rtcPrePubJson.conf
+：
+# MQTT通信モジュールへのpath
+manager.modules.load_path: /usr/local/lib/python3.6/dist-packages/OpenRTM_aist_paho_mqtt_module
+# MQTT通信モジュール名
+manager.modules.preload: OutPortPahoPubJson.py
+# MQTT BrokerへのOutPortの自動接続
+manager.components.preconnect: ConsoleIn0.out?interface_type=mqtt_json&data_type=TimedLong&retain=true&will=true
+```
+
+注意点ですが、**preconnect指定によりJSONシリアライズ版MQTT通信モジュールを利用する場合はデータポートのデータ型を"data_type"にて指定する必要があります**。RTSystemEditorで直接プロパティを入力する場合はデータ型を指定する必要はありません。また、CDRシリアライズ版かJSONシリアライズ版に関係なくMQTTの一部機能である'Will'を利用する場合も、これと同様にpreconnect指定で事前設定するケースにおいてのみデータ型の指定が必要です。詳細は最下部のNote『OutPortPahoPublisherまたはOutPortPahoPubSecureモジュールのrtc.confでpreconnect指定により事前にWillを設定するには』を参照してください。
+
+一つのRTコンポーネント（RTC名：PahoMqttTest）にOutPort(ポート名：out）もInPort（ポート名：in）も備わっており、そのどちらもセキュア通信機能付きのCDRシリアライズ版MQTT通信インタフェースを通してデータの送受信を行いたい場合は以下のように","で区切ってモジュール名を2つ指定します。どちらのデータポートもBrokerへの自動接続を行いたい場合も同様に","で区切って、各データポートの通信インタフェースや関連するプロパティを設定します。
 ```bash
 # rtcPrePubSubSecure.conf
 ：
@@ -251,8 +281,8 @@ manager.modules.load_path: /usr/local/lib/python3.6/dist-packages/OpenRTM_aist_p
 manager.modules.preload: OutPortPahoPubSecure.py, InPortPahoSubSecure.py
 # MQTT Brokerへの2つのデータポート（OutPortとInPort）の自動接続
 manager.components.preconnect: \
-PahoMqttTest0.out?interface_type=paho_mqtts&cacert=./tls/ca.crt&cltcert=./tls/clt.crt&cltkey=./tls/clt.key, \
-PahoMqttTest0.in?interface_type=paho_mqtts&cacert=./tls/ca.crt&cltcert=./tls/clt.crt&cltkey=./tls/clt.key
+PahoMqttTest0.out?interface_type=mqtts_cdr&cacert=./tls/ca.crt&cltcert=./tls/clt.crt&cltkey=./tls/clt.key, \
+PahoMqttTest0.in?interface_type=mqtts_cdr&cacert=./tls/ca.crt&cltcert=./tls/clt.crt&cltkey=./tls/clt.key
 ```
 
 MQTT通信モジュールへのpathはインストール先を指定するか、インストール後であればcloneしたレポジトリ内にあるモジュールを指定しても構いません。"rtc.conf"の設定例はリポジトリの"OpenRTM_aist_paho_mqtt_module/samples/rtc_conf/"配下に置いてあるので参考にしてください。
@@ -273,8 +303,10 @@ QoS not found. Default QoS '0' is used.
 Client ID not found. Random number ID is used.
 CleanSession not found. Default clean_session 'True' is used.
 MaxInflight not found. Default max_inflight '20' is used.
+Retained not found. Default retained 'False' is used.
+Last will not found. Default last will 'False' is used.
 [connecting to MQTT broker start]
-connected to broker.
+ connected to broker.
 [connecting to MQTT broker end]
 :
 ```
@@ -289,7 +321,7 @@ QoS: 1
 Client ID not found. Random number ID is used.
 CleanSession not found. Default clean_session 'True' is used.
 [connecting to MQTT broker start]
-connected to broker.
+ connected to broker.
 [connecting to MQTT broker end]
 Subscription started: 1 (0,)
 :
@@ -301,14 +333,14 @@ Subscription started: 1 (0,)
 
 <img src="https://user-images.githubusercontent.com/40682353/93737397-10d78680-fc1e-11ea-8987-4da792f94b0e.png" width=70%>
 
-BrokerはRTSystemEditor上では表示されません。しかし、OutPortとInPortの各データポートが緑色になっていれば、Brokerへの接続が完了していることを示しています。後は通常通り、RTSystemEditorかRTShellでConsoleInをActivate化すればRTシステムが稼働します。Deactivate化も同様にRTSystemEditorかRTShellから実行可能です。
+BrokerはRTSystemEditor上では表示されません。しかし、OutPortとInPortの各データポートが緑色になっていれば、Brokerへの接続が完了していることを示しています。後は通常通り、RTSystemEditorでConsoleInをActivate化すればRTシステムが稼働します。Deactivate化も同様にRTSystemEditorから実行可能です。
 
 ### 『RTSystemEditor上でのマニュアル操作によりRTシステムを構築する手順』
 
 #### (1) rtc.confでのモジュール指定
-MQTT通信モジュールをOpenRTM-aistに動的に組み込むには、MQTTで通信を行いたいRTコンポーネントのrtc.confにおいて、"**manager.modules.load_path:**"にてMQTT通信モジュールへのpathを、"**manager.modules.preload:**"にてモジュール名を指定する必要があります。OutPortはデータを送信する側なので、OutPortPahoPublisherもしくはOutPortPahoPubSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、OutPortPahoSubscriberもしくはOutPortPahoSubSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
+MQTT通信モジュールをOpenRTM-aistに動的に組み込むには、MQTTで通信を行いたいRTコンポーネントのrtc.confにおいて、"**manager.modules.load_path:**"にてMQTT通信モジュールへのpathを、"**manager.modules.preload:**"にてモジュール名を指定する必要があります。OutPortはデータを送信する側なので、(1) OutPortPahoPublisher, (3) OutPortPahoPubSecure, (5) OutPortPahoPubJsonもしくは(7) OutPortPahoPubJsonSecureのいずれかのMQTT Publisher通信モジュールを指定します。一方、InPortはデータを受信する側なので、(2) InPortPahoSubscriber, (4) InPortPahoSubSecure, (6) InPortPahoSubJsonもしくは(8) InPortPahoSubJsonSecureのいずれかのMQTT Subscriber通信モジュールを指定します。
 
-例えば、セキュア通信機能なしのMQTT通信インタフェースを用いてOutPortからデータを送信したい場合は以下のようにrtc.confに記述します。
+例えば、セキュア通信機能なしのCDRシリアライズ版MQTT通信インタフェースを用いてOutPortからデータを送信したい場合は以下のようにrtc.confに記述します。
 ```bash
 # rtcPub.conf
 ：
@@ -318,7 +350,7 @@ manager.modules.load_path: /usr/local/lib/python2.7/dist-packages/OpenRTM_aist_p
 manager.modules.preload: OutPortPahoPublisher.py
 ```
 
-セキュア通信機能なしのMQTT通信インタフェースを用いてInPortにてデータを受信したい場合は以下の通り。
+セキュア通信機能なしのCDRシリアライズ版MQTT通信インタフェースを用いてInPortにてデータを受信したい場合は以下の通り。
 ```bash
 # rtcSub.conf
 ：
@@ -328,7 +360,17 @@ manager.modules.load_path: /usr/local/lib/python2.7/dist-packages/OpenRTM_aist_p
 manager.modules.preload: InPortPahoSubscriber.py
 ```
 
-一つのRTコンポーネントにOutPortもInPortも備わっており、そのどちらもセキュア通信機能付きのMQTT通信インタフェースを通してデータの送受信を行いたい場合は以下のように","で区切ってモジュール名を2つ指定します。
+セキュア通信機能なしのJSONシリアライズ版MQTT通信インタフェースを用いてInPortにてデータを受信したい場合は以下の通り。
+```bash
+# rtcSubJson.conf
+：
+# MQTT通信モジュールへのpath
+manager.modules.load_path: /usr/local/lib/python2.7/dist-packages/OpenRTM_aist_paho_mqtt_module
+# MQTT通信モジュール名
+manager.modules.preload: InPortPahoSubJson.py
+```
+
+一つのRTコンポーネントにOutPortもInPortも備わっており、そのどちらもセキュア通信機能付きのCDRシリアライズ版MQTT通信インタフェースを通してデータの送受信を行いたい場合は以下のように","で区切ってモジュール名を2つ指定します。
 ```bash
 # rtcPubSubSecure.conf
 ：
@@ -362,7 +404,7 @@ OpenRTPを起動し、RTSystemEditorのSystem Diagramに先ほど実行したRT�
 
 <img src="https://user-images.githubusercontent.com/40682353/93169366-e68a5280-f75f-11ea-9762-409585f32a36.png" width=40%>
 
-Connector Profileダイアログが立ち上がるのでProfile中の【Interface Type】から"paho_mqtt"を選択します。これで通信インタフェースがCORBAからMQTTへと切り替わります。
+Connector Profileダイアログが立ち上がるのでProfile中の【Interface Type】から"mqtt_cdr"を選択します。これで通信インタフェースがCORBAからMQTTへと切り替わります。なお、【Interface Type】はセキュア通信機能付きCDRシリアライズ版モジュールの場合は"mqtts_cdr"、セキュア通信機能なしJSONシリアライズ版モジュールの場合は"mqtt_json"、セキュア通信機能付きJSONシリアライズ版モジュールの場合は"mqtts_json"と表記されることになります。
 
 <img src="https://user-images.githubusercontent.com/40682353/93169383-f144e780-f75f-11ea-986a-204dcffbfa70.png" width=40%>
 
@@ -374,7 +416,7 @@ Connector ProfileダイアログにBufferの各種設定と、MQTT通信モジ�
 
 <img src="https://user-images.githubusercontent.com/40682353/93169432-0caff280-f760-11ea-8dde-0206c82b1246.png" width=50%>
 
-プロパティの設定箇所が追加されます。複数のプロパティを変更する場合は必要分"追加"ボタンをクリックしてください。プロパティはNameとValueの組み合わせ、すなわちkey-value型で設定できます。Featuresで示した設定可能なプロパティを確認しながら、変更が必要なプロパティを入力します。例えばMQTT BrokerのアドレスとTopic名を変更したい場合は次のように入力します。なお、Brokerの設定次第では使用可能なTopicが制限されていることもあるのでサーバの管理者に、クライアント側でTopicを設定可能かどうか予め確認しておきましょう。
+プロパティの設定箇所が追加されます。複数のプロパティを変更する場合は必要分"追加"ボタンをクリックしてください。プロパティはNameとValueの組み合わせ、すなわちkey-value型で設定できます。Featuresで示した設定可能なプロパティを参照しながら、変更が必要なプロパティを入力します。例えばMQTT BrokerのアドレスとTopic名を変更したい場合は次のように入力します。なお、Brokerの設定次第では使用可能なTopicが制限されていることもあるのでサーバの管理者に、クライアント側でTopicを設定可能かどうか予め確認しておきましょう。
 
 <img src="https://user-images.githubusercontent.com/40682353/93169451-16d1f100-f760-11ea-8827-f1b011ce4bd8.png" width=50%>
 
@@ -416,7 +458,7 @@ PahoMqttTest0.out?interface_type=paho_mqtts&host={AWSから割り当てられた
 
 なお、AWS IoT Core では、Topicは利用者側で自由に設定できますが、QoSは0または1のみが有効です。QoS=2は選択できませんのでご注意ください。
 
-また、MQTT通信モジュールの現行バージョンでは、IoT Coreを介したデータポート間のPublish/Subscribeのみに対応しています。AWS側とはメッセージ中のpayloadのデータ形式やシリアライズ形式が異なるため、Amazon LambdaやAmazon Kinesis等他のAWSクラウドサービスとの連携は今のところできません。
+また、CDRシリアライズ版MQTT通信モジュールは、IoT Coreを介したデータポート間のPublish/Subscribeのみに対応しています。AWS側とはメッセージ中のpayloadのデータ形式やシリアライズ形式が異なるため、Amazon LambdaやAmazon Kinesis等他のAWSクラウドサービスとの連携はできません。RTコンポーネントとAWSで提供している他のクラウドサービスとの連携を図りたい場合は、JSONシリアライズ版MQTT通信モジュールを使用してください。
 
 ### OutPortPahoPublisherまたはOutPortPahoPubSecureモジュールのrtc.confでpreconnect指定により事前にWillを設定するには
 以下のように、rtc.conf内でpreconnect指定により、willの設定に加えて、データポートのデータ型（data_type）も設定する必要があります。
