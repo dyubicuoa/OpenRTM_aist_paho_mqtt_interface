@@ -432,18 +432,18 @@ Connector ProfileダイアログにBufferの各種設定と、MQTT通信モジ�
 
 ## Note
 
-### データポート間の結線について
+### A) データポート間の結線について
 RTSystemEditorからの直接操作により、MQTT通信インタフェースを通してデータポートをMQTT Brokerへ接続する際は、**データポート右クリックでの接続が基本**となります。データポート間の結線によるBrokerへの接続も可能ですが、できるだけ行わないでください。どうしても結線したい場合はプロパティのClient IDはバッティングを避けるため、デフォルトのランダム値を使用するようにしてください。また、1対Nで結線する場合、例えばOutPort一つに対して複数のInPortをすべて結線してBrokerに接続するケースにおいては、OutPort側の通信モジュールのインスタンスが複数立ち上がるため、同一Topicのままだとメッセージングが多重化してしまい想定通りの通信を行えなくなるので気をつけてください。このケースでは、一つの結線ごとに別のTopicを設定することで問題を回避できます。
 
-### MQTT通信インタフェース動作確認用 Example RTC の起動スクリプト
+### B) MQTT通信インタフェース動作確認用 Example RTC の起動スクリプト
 産業技術総合研究所 安藤様から、OpenRTM-aistで用意されているRTコンポーネントのExampleのうち、"SeqIO"と"SimpleIO"、"Slider_and_Motor"の起動スクリプトをご提供いただきました。MQTT通信インタフェースの動作確認を手早く行いたい方向けのスクリプトとなります。samples/launch_scriptsフォルダ内に追加しましたのでよろしければお試しください。
 
 なお、起動スクリプトの実行には、実行するローカルマシン内で稼働する何らかのMQTT Brokerが必要となります。起動スクリプトの実行前に、Eclipse Mosquitto等OSSのBrokerを予めインストールし起動しておいてください。
 
 また、"Slider_and_Motor"についてはパッケージ"python3-tk"（Python3系）もしくは"python-tk"（Python2系）が必要になります。script実行前に、コマンドラインから`sudo apt install python3-tk`または`sudo apt install python-tk`により、該当のパッケージをインストールしてください。これに加えて、"Slider_and_Motor"の実行可能な環境はDesktopのみとなります。Server環境やDocker等のContainer環境を使用されている方はご注意ください。
 
-### AWS IoT Core への接続について
-セキュア通信機能付きMQTT通信モジュール（OutPortPahoPubSecureまたはInPortPahoSubSecure）を用いれば、IoTプラットフォームの AWS IoT Core を中継地点（Broker）としたデータポート間のデータ送受信が可能です。AWSにてThing設定時に得られた情報をもとに、IoT Core へ接続したいRTコンポーネントのrtc.confを以下のように書き換えてください。以下の事例はOutPortを Iot Core に接続するケースとなります。
+### C) AWS IoT Core への接続について
+セキュア通信機能付きMQTT通信モジュール（OutPortPahoPubSecure, InPortPahoSubSecure, OutPortPahoPubJsonSecureまたはInPortPahoSubJsonSecure）を用いれば、IoTプラットフォームの AWS IoT Core を中継地点（Broker）としたデータポート間のデータ送受信が可能です。AWSにてThing設定時に得られた情報をもとに、IoT Core へ接続したいRTコンポーネント用のrtc.confを以下のように書き換えてください。以下の事例はJSONシリアライズ版MQTT通信モジュールを用いて、OutPortを Iot Core に接続するケースとなります。
 ```bash
 # rtc.conf example to connect to AWS IoT Core
 ：
@@ -453,14 +453,14 @@ manager.modules.load_path: /usr/local/lib/python3.6/dist-packages/OpenRTM_aist_p
 manager.modules.preload: OutPortPahoPubSecure.py
 # AWS IoT CoreへのOutPortの自動接続
 manager.components.preconnect: \
-PahoMqttTest0.out?interface_type=paho_mqtts&host={AWSから割り当てられたエンドポイント}&cacert={AWSで発行されたルート認証局証明書へのpath}&cltcert={AWSで発行されたクライアント証明書へのpath}&cltkey={AWSで発行されたクライアント秘密鍵へのpath}
+PahoMqttTest0.out?interface_type=mqtts_json&host={AWSから割り当てられたエンドポイント}&cacert={AWSで発行されたルート認証局証明書へのpath}&cltcert={AWSで発行されたクライアント証明書へのpath}&cltkey={AWSで発行されたクライアント秘密鍵へのpath}
 ```
 
 なお、AWS IoT Core では、Topicは利用者側で自由に設定できますが、QoSは0または1のみが有効です。QoS=2は選択できませんのでご注意ください。
 
 また、CDRシリアライズ版MQTT通信モジュールは、IoT Coreを介したデータポート間のPublish/Subscribeのみに対応しています。AWS側とはメッセージ中のpayloadのデータ形式やシリアライズ形式が異なるため、Amazon LambdaやAmazon Kinesis等他のAWSクラウドサービスとの連携はできません。RTコンポーネントとAWSで提供している他のクラウドサービスとの連携を図りたい場合は、JSONシリアライズ版MQTT通信モジュールを使用してください。
 
-### OutPortPahoPublisherまたはOutPortPahoPubSecureモジュールのrtc.confでpreconnect指定により事前にWillを設定するには
+### D) OutPortPahoPublisherまたはOutPortPahoPubSecureモジュールのrtc.confでpreconnect指定により事前にWillを設定するには
 以下のように、rtc.conf内でpreconnect指定により、willの設定に加えて、データポートのデータ型（data_type）も設定する必要があります。
 ```bash
 # rtc.conf example to enable 'Will' function
@@ -471,7 +471,7 @@ manager.modules.load_path: /usr/local/lib/python3.6/dist-packages/OpenRTM_aist_p
 manager.modules.preload: OutPortPahoPublisher.py
 # Willの有効化
 manager.components.preconnect: \
-ConsoleIn0.out?interface_type=paho_mqtt&will=True&data_type=TimedLong
+ConsoleIn0.out?interface_type=mqtt_cdr&will=True&data_type=TimedLong
 ```
 
 これに対して、RTSystemEditorにて直接プロパティを設定するケースにおいては、データ型を入力する必要はありません。Name-Valueの設定箇所でwillをTrueに設定するだけで足ります。
