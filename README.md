@@ -106,7 +106,7 @@ CDRシリアライズ版とJSONシリアライズ版いずれの通信モジュ�
 # rtc.conf
 ：
 # MQTT BrokerへのOutPortの自動接続
-manager.components.preconnect: ConsoleIn0.out?interface_type=mqtt&host=127.0.0.1&topic=hoge
+manager.components.preconnect: ConsoleIn0.out?interface_type=mqtt_cdr&host=127.0.0.1&topic=hoge
 ```
 
 プロパティの事前設定を利用しない場合、もしくはver.1.2.0より前のバージョンのOpenRTM-aistを利用されている場合は、プロパティは以下のようににロボットシステムの構築ツールであるRTSystemEditor上で、RTコンポーネントにおけるデータポートの接続を行う際に表示されるConnector Profileダイアログの"詳細"からKey-Value形式で直接入力することになります。いくつかのKeyを選択し、順不同で入力可能なのはrtc.confにおける事前設定と同様です。
