@@ -62,11 +62,11 @@ MQTT通信モジュールは以下の8つで構成されており、メッセー
 
 <img src="https://user-images.githubusercontent.com/40682353/99896958-af449e80-2cd8-11eb-8675-7f04aa4bca00.png" width=100%>
 
-CDRシリアライズ版モジュールはOpenRTM-aistにおけるベースのシリアライズ（マーシャル）形式であるCORBA CDR（Common Data Representation）でシリアライズされたデータをそのままPayloadとして用います。CDRシリアライズが採用されている現行の外部システムは稀であることから、CDRシリアライズ版モジュールはRTシステムにおけるデータポート間の通信にしか利用できず、RTシステム外部の一般のMQTTシステムとの連携はできません。しかしながら、RTシステム中のデータポート間の通信においては、データ処理が軽いことから**JSONシリアライズ版モジュールよりも通信上のパフォーマンスは高くなります**。ですので、RTシステム内でMQTT通信が完結するのであれば、CDRシリアライズ版モジュールの使用をおすすめします。なぜCDRシリアライズ版の方がJSONシリアライズ版よりもデータ処理が軽くなるのか技術的な背景は、最下部のNoteにまとめていますので、そちらを参考にしてください。
+CDRシリアライズ版モジュールはOpenRTM-aistにおけるベースのシリアライズ（マーシャル）形式であるCORBA CDR（Common Data Representation）でシリアライズされたデータをそのままPayloadとして用います。CDRシリアライズが採用されている現行の外部システムは稀であることから、CDRシリアライズ版モジュールはRTシステムにおけるデータポート間の通信にしか利用できず、RTシステム外部の一般のMQTTシステムとの連携はできません。しかしながら、RTシステム中のデータポート間の通信においては、データ処理が軽いことから**JSONシリアライズ版モジュールよりも通信上のパフォーマンスは高くなります**。ですので、RTシステム内でMQTT通信が完結するのであれば、CDRシリアライズ版モジュールの使用をおすすめします。なぜCDRシリアライズ版の方がJSONシリアライズ版よりもデータ処理が軽くなるのか技術的な背景は、最下部のNote E)にまとめていますので、そちらを参考にしてください。
 
 <img src="https://user-images.githubusercontent.com/40682353/99896987-eb77ff00-2cd8-11eb-8b10-211355e0aa32.png" width=100%>
 
-これに対してJSONシリアライズ版モジュールは、データポート間の通信パフォーマンスはCDRシリアライズ版モジュールに劣後するものの、**RTシステム外部のMQTTシステムやAWS等が提供するクラウドサービスとの連携が可能**になる等、拡張性が増します。すなわちJSONシリアライズ版モジュールを用いることで、**RTシステムの枠を超えたシステム構築が可能**となります。試しにJSONシリアライズ版モジュールを用いてRTコンポーネントのOutPortからPublishしたデータを、MQTTクライアントライブラリを用いて構築した通常のMQTTクライアントでSubscribeしてみると、JSON形式でシリアライズされたTextデータを取得できることがわかります。これとは逆にJSON形式でシリアライズされたデータを通常のMQTTクライアントからPublishし、RTコンポーネントのInPortでSubscribeすることもできます。以上から、JSONシリアライズ版モジュールは、外部システムとの連携が必要等、RTシステム内でMQTT通信が収まらないケースでの使用が適していると言えます。
+これに対してJSONシリアライズ版モジュールは、データポート間の通信パフォーマンスはCDRシリアライズ版モジュールに劣後するものの、**RTシステム外部のMQTTシステムやAWS等が提供するクラウドサービスとの連携が可能**になる（AWS IoT Coreへの接続方法はNote C)を参照のこと）等、拡張性が増します。すなわちJSONシリアライズ版モジュールを用いることで、**RTシステムの枠を超えたシステム構築が可能**となります。試しにJSONシリアライズ版モジュールを用いてRTコンポーネントのOutPortからPublishしたデータを、MQTTクライアントライブラリを用いて構築した通常のMQTTクライアントでSubscribeしてみると、JSON形式でシリアライズされたTextデータを取得できることがわかります。これとは逆にJSON形式でシリアライズされたデータを通常のMQTTクライアントからPublishし、RTコンポーネントのInPortでSubscribeすることもできます。以上から、JSONシリアライズ版モジュールは、外部システムとの連携が必要等、RTシステム内でMQTT通信が収まらないケースでの使用が適していると言えます。
 
 CDRシリアライズ版とJSONシリアライズ版いずれの通信モジュールもVersion3.1.1のMQTTプロトコルを採用しており、**セキュア通信機能のないもの**と**セキュア通信機能付きのもの**を備えています。モジュール名の接尾辞に'Secure'と表記されているものがセキュア通信対応となります。すなわち、(1),(2),(5)または(6)のモジュールはセキュア通信機能がなく平文での通信となるため、ローカルマシン内やローカルネットワーク内での通信用に限定されます。インターネット等不特定多数の方が利用するネットワーク上にシステムを構築する場合は、セキュア通信機能付きの(3),(4),(7)または(8)のモジュールを使用してください。  
 
@@ -85,7 +85,7 @@ CDRシリアライズ版とJSONシリアライズ版いずれの通信モジュ�
 | 8. | maxif | 20 | Max inflight messages。サーバのACKを待たずに同時発信可能なメッセージの数。値が高ければメッセージングのスループットは向上するが、その分メモリ消費量が大きくなる。OutPortPahoPublisherモジュールまたはOutPortPahoPubJsonモジュールでQoS>0の場合のみ有効 |
 | 9. | retain | False | MQTT ver.3.1.1におけるRetain（保持）の機能を使用するか否か。Retainを有効化（True）すると、BrokerにPublisher（OutPort）から送信された最新のメッセージが保持されるようになる。これにより、遅れて参加してきたSubscriber（InPort）は通信頻度が低いシステムにおいても、Brokerに接続後すぐに最新のメッセージを取得することができる。RetainはOutPortPahoPublisherモジュールまたはOutPortPahoPubJsonモジュールでのみ設定可能 |
 | 10. | clrrm | False | Clear retained message。RetainによりBrokerに保持された最新メッセージは、明示的に削除されない限り保持が継続する。True指定でBrokerに保持された最新メッセージを削除する。Retainedメッセージの削除は、OutPortPahoPublisherモジュールまたはOutPortPahoPubJsonモジュールからのみ可能 |
-| 11. | will | False | MQTT ver.3.1.1におけるWill（遺言）の機能を使用するか否か。Willを有効化（True）すると、Publisher（OutPort）側で何らかの障害が発生し、正常にdisconnectせずにBrokerから切断された場合に、BrokerからSubscriber（InPort）に対して予め指定していたWillメッセージが即座に送信される。WillメッセージはRTMにおける各種データ型の各項目に数値0（文字列の場合は文字0、Booleanの場合はFalse）が入力されたものとなる。現時点では基本データ型（BasicDataTypes）と拡張データ型（ExtendedDataTypes）のみに対応。WillはOutPortPahoPublisherモジュールまたはOutPortPahoPubJsonモジュールでのみ設定可能。*※ rtc.confでpreconnect指定により事前にWillを設定する場合はデータ型の指定も必要。詳細は下記Noteを参照のこと* |
+| 11. | will | False | MQTT ver.3.1.1におけるWill（遺言）の機能を使用するか否か。Willを有効化（True）すると、Publisher（OutPort）側で何らかの障害が発生し、正常にdisconnectせずにBrokerから切断された場合に、BrokerからSubscriber（InPort）に対して予め指定していたWillメッセージが即座に送信される。WillメッセージはRTMにおける各種データ型の各項目に数値0（文字列の場合は文字0、Booleanの場合はFalse）が入力されたものとなる。現時点では基本データ型（BasicDataTypes）と拡張データ型（ExtendedDataTypes）のみに対応。WillはOutPortPahoPublisherモジュールまたはOutPortPahoPubJsonモジュールでのみ設定可能。*※ rtc.confでpreconnect指定により事前にWillを設定する場合はデータ型の指定も必要。詳細はNote D)を参照のこと* |
 
 **セキュア通信機能付き**モジュール **(3) OutPortPahoPubSecure, (4) InPortPahoSubSecure, (7) OutPortPahoPubJsonSecure** および **(8) InPortPahoSubJsonSecure** に関するプロパティ
 ||Name (Key)|Default value| 説明 |
@@ -103,7 +103,7 @@ CDRシリアライズ版とJSONシリアライズ版いずれの通信モジュ�
 | 11. | maxif | 20 | Max inflight messages。サーバのACKを待たずに同時発信可能なメッセージの数。値が高ければメッセージングのスループットは向上するが、その分メモリ消費量が大きくなる。OutPortPahoPubSecureモジュールまたはOutPortPahoPubJsonSecureモジュールでQoS>0の場合のみ有効 |
 | 12. | retain | False | MQTT ver.3.1.1におけるRetain（保持）の機能を使用するか否か。Retainを有効化（True）すると、BrokerにPublisher（OutPort）から送信された最新のメッセージが保持されるようになる。これにより、遅れて参加してきたSubscriber（InPort）は通信頻度が低いシステムにおいても、Brokerに接続後すぐに最新のメッセージを取得することができる。RetainはOutPortPahoPubSecureモジュールまたはOutPortPahoPubJsonSecureモジュールでのみ設定可能 |
 | 13. | clrrm | False | Clear retained message。RetainによりBrokerに保持された最新メッセージは、明示的に削除されない限り保持が継続する。True指定でBrokerに保持された最新メッセージを削除する。Retainedメッセージの削除は、OutPortPahoPubSecureモジュールまたはOutPortPahoPubJsonSecureモジュールからのみ可能 |
-| 14. | will | False | MQTT ver.3.1.1におけるWill（遺言）の機能を使用するか否か。Willを有効化（True）すると、Publisher（OutPort）側で何らかの障害が発生し、正常にdisconnectせずにBrokerから切断された場合に、BrokerからSubscriber（InPort）に対して予め指定していたWillメッセージが即座に送信される。WillメッセージはRTMにおける各種データ型の各項目に数値0（文字列の場合は文字0、Booleanの場合はFalse）が入力されたものとなる。現時点では基本データ型（BasicDataTypes）と拡張データ型（ExtendedDataTypes）のみに対応。WillはOutPortPahoPubSecureモジュールまたはOutPortPahoPubJsonSecureモジュールでのみ設定可能。*※ rtc.confでpreconnect指定により事前にWillを設定する場合はデータ型の指定も必要。詳細は下記Noteを参照のこと* |
+| 14. | will | False | MQTT ver.3.1.1におけるWill（遺言）の機能を使用するか否か。Willを有効化（True）すると、Publisher（OutPort）側で何らかの障害が発生し、正常にdisconnectせずにBrokerから切断された場合に、BrokerからSubscriber（InPort）に対して予め指定していたWillメッセージが即座に送信される。WillメッセージはRTMにおける各種データ型の各項目に数値0（文字列の場合は文字0、Booleanの場合はFalse）が入力されたものとなる。現時点では基本データ型（BasicDataTypes）と拡張データ型（ExtendedDataTypes）のみに対応。WillはOutPortPahoPubSecureモジュールまたはOutPortPahoPubJsonSecureモジュールでのみ設定可能。*※ rtc.confでpreconnect指定により事前にWillを設定する場合はデータ型の指定も必要。詳細はNote D)を参照のこと* |
 
 プロパティはOpenRTM-aist ver.1.2.0以降であれば、RTコンポーネントの実行前に、rtc.confにて事前設定可能です。このrtc.confを"-f"でオプション指定し、RTコンポーネントを実行することでMQTT Brokerへの接続が完了した状態へと遷移します。なお、Keyは必ずしも上記の順番で入力する必要はありません。いくつかのKeyを選択し、順不同で入力することができます。
 ```bash
@@ -273,7 +273,7 @@ manager.modules.preload: OutPortPahoPubJson.py
 manager.components.preconnect: ConsoleIn0.out?interface_type=mqtt_json&data_type=TimedLong&retain=true&will=true
 ```
 
-注意点ですが、**preconnect指定によりJSONシリアライズ版MQTT通信モジュールを利用する場合はデータポートのデータ型を"data_type"にて指定する必要があります**。RTSystemEditorで直接プロパティを入力する場合はデータ型を指定する必要はありません。また、CDRシリアライズ版かJSONシリアライズ版に関係なくMQTTの一部機能である'Will'を利用する場合も、これと同様にpreconnect指定で事前設定するケースにおいてのみデータ型の指定が必要です。詳細は最下部のNote『OutPortPahoPublisherまたはOutPortPahoPubSecureモジュールのrtc.confでpreconnect指定により事前にWillを設定するには』を参照してください。
+注意点ですが、**preconnect指定によりJSONシリアライズ版MQTT通信モジュールを利用する場合はデータポートのデータ型を"data_type"にて指定する必要があります**。RTSystemEditorで直接プロパティを入力する場合はデータ型を指定する必要はありません。また、CDRシリアライズ版かJSONシリアライズ版に関係なくMQTTの一部機能である'Will'を利用する場合も、これと同様にpreconnect指定で事前設定するケースにおいてのみデータ型の指定が必要です。詳細はNote D)を参照してください。
 
 一つのRTコンポーネント（RTC名：PahoMqttTest）にOutPort(ポート名：out）もInPort（ポート名：in）も備わっており、そのどちらもセキュア通信機能付きのCDRシリアライズ版MQTT通信インタフェースを通してデータの送受信を行いたい場合は以下のように","で区切ってモジュール名を2つ指定します。どちらのデータポートもBrokerへの自動接続を行いたい場合も同様に","で区切って、各データポートの通信インタフェースや関連するプロパティを設定します。
 ```bash
@@ -404,7 +404,7 @@ OpenRTPを起動し、RTSystemEditorのSystem Diagramに先ほど実行したRT�
 
 <img src="https://user-images.githubusercontent.com/40682353/93169326-d4a8af80-f75f-11ea-845a-9a0dc91d97df.png" width=70%>
 
-データ送信側RTコンポーネントConsoleInのOutPortを右クリックし、"接続"を選択します。
+データ送信側RTコンポーネントConsoleInのOutPortを右クリックし、"接続"を選択します。このように**MQTT通信インタフェースではデータポート間の結線は行いません**。RTSystemEditorからの直接操作による、データポートのBrokerへの接続に関する注意点をNote A)にまとめましたので参考にしてください。
 
 <img src="https://user-images.githubusercontent.com/40682353/99870241-05e8a480-2c15-11eb-982c-0aa3d80ac242.png" width=40%>
 
@@ -462,7 +462,7 @@ PahoMqttTest0.out?interface_type=mqtts_json&host={AWSから割り当てられた
 
 なお、AWS IoT Core では、Topicは利用者側で自由に設定できますが、QoSは0または1のみが有効です。QoS=2は選択できませんのでご注意ください。
 
-また、CDRシリアライズ版MQTT通信モジュールは、IoT Coreを介したデータポート間のPublish/Subscribeのみに対応しています。AWS側とはメッセージ中のpayloadのデータ形式やシリアライズ形式が異なるため、Amazon LambdaやAmazon Kinesis等他のAWSクラウドサービスとの連携はできません。RTコンポーネントとAWSで提供している他のクラウドサービスとの連携を図りたい場合は、JSONシリアライズ版MQTT通信モジュールを使用してください。
+また、CDRシリアライズ版MQTT通信モジュールは、IoT Coreを介したデータポート間のPublish/Subscribeのみに対応しています。AWS側とはメッセージ中のpayloadのデータ形式やシリアライズ形式が異なるため、Amazon LambdaやAmazon Kinesis等他のAWSクラウドサービスとの連携はできません。**RTコンポーネントとAWSで提供している他のクラウドサービスとの連携を図りたい場合は、JSONシリアライズ版MQTT通信モジュールを使用してください。**
 
 ### D) OutPortPahoPublisherまたはOutPortPahoPubSecureモジュールのrtc.confでpreconnect指定により事前にWillを設定するには
 以下のように、rtc.conf内でpreconnect指定により、willの設定に加えて、データポートのデータ型（data_type）も設定する必要があります。
@@ -493,7 +493,6 @@ OpenRTM-aistのver.1.2.xまでは、上図の通りRTコンポーネントでwri
 これに対して、JSONシリアライズ版MQTT通信モジュールでは、CDR⇔JSONに示すシリアライズフォーマットの相互変換が必要になります。すなわち、JSONシリアライズ版のOutPort用MQTT通信モジュールでは、ミドルウェア側から受け取ったCDRデータを一旦デシリアライズ（アンマーシャル）し、データ型オブジェクトを得た上で、そこからJSONにシリアライズし直す、という処理を行っています。一方のInPort側においても該当処理の逆の過程が必要となります。つまり、受け取ったMQTT Message中のpayloadはJSONデータであることから、ミドルウェア側にデータを渡すために、一旦JSONデータをデシリアライズし、辞書型オブジェクトを得た上で、そこからCDRにシリアライズし直す、という一連の処理を行います。
 
 このように、JSONシリアライズ版MQTT通信モジュールは、CDRシリアライズ版と比べて余分な処理が発生してしまうことから、総じてデータポート間の通信パフォーマンスは劣ることになります。これに加えてCDRデータはbinaryであるのに対して、JSONデータはtextあることもパフォーマンスが劣後する一因と言えます。
-
 
 ### 動作確認済みの環境
 * Ubuntu 16.04, x86-64 CPU
