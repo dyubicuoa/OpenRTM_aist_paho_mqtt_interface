@@ -64,11 +64,11 @@ CDRシリアライズ版モジュールはOpenRTM-aistにおけるベースの�
 
 これに対してJSONシリアライズ版モジュールは、データポート間の通信パフォーマンスはCDRシリアライズ版モジュールに劣後するものの、**RTシステム外部のMQTTシステムやAWS等が提供するクラウドサービスとの連携が可能**になる等、拡張性が増します。すなわちJSONシリアライズ版モジュールを用いることで、**RTシステムの枠を超えたシステム構築が可能**となります。試しにJSONシリアライズ版モジュールを用いてRTコンポーネントのOutPortからPublishしたデータを、MQTTクライアントライブラリを用いて構築した通常のMQTTクライアントでSubscribeしてみると、JSON形式でシリアライズされたTextデータを取得できることがわかります。これとは逆にJSON形式でシリアライズされたデータを通常のMQTTクライアントからPublishし、RTコンポーネントのInPortでSubscribeすることもできます。以上から、JSONシリアライズ版モジュールは、外部システムとの連携が必要等、RTシステム内でMQTT通信が収まらないケースでの使用が適していると言えます。
 
-CDRシリアライズ版とJSONシリアライズ版いずれの通信モジュールもVersion3.1.1のMQTTプロトコルを採用しており、セキュア通信機能のないものとセキュア通信機能付きのものを備えています。モジュール名の接尾辞に'Secure'と表記されているものがセキュア通信対応となります。すなわち、(1),(2),(5)または(6)のモジュールはセキュア通信機能がなく平文での通信となるため、ローカルマシン内やローカルネットワーク内での通信用に限定されます。インターネット等不特定多数の方が利用するネットワーク上にシステムを構築する場合は、セキュア通信機能付きの(3),(4),(7)または(8)のモジュールを使用してください。  
+CDRシリアライズ版とJSONシリアライズ版いずれの通信モジュールもVersion3.1.1のMQTTプロトコルを採用しており、**セキュア通信機能のないもの**と**セキュア通信機能付きのもの**を備えています。モジュール名の接尾辞に'Secure'と表記されているものがセキュア通信対応となります。すなわち、(1),(2),(5)または(6)のモジュールはセキュア通信機能がなく平文での通信となるため、ローカルマシン内やローカルネットワーク内での通信用に限定されます。インターネット等不特定多数の方が利用するネットワーク上にシステムを構築する場合は、セキュア通信機能付きの(3),(4),(7)または(8)のモジュールを使用してください。  
 
 各通信モジュールのプロパティとそのdefault値は以下のとおりです。
 
-セキュア通信機能なしモジュール **(1) OutPortPahoPublisher, (2) InPortPahoSubscriber, (5) OutPortPahoPubJson** および **(6) InPortPahoSubJson** に関するプロパティ
+**セキュア通信機能なし**モジュール **(1) OutPortPahoPublisher, (2) InPortPahoSubscriber, (5) OutPortPahoPubJson** および **(6) InPortPahoSubJson** に関するプロパティ
 ||Name (Key)|Default value| 説明 |
 | :-- | :-- | :-- | :-- |
 | 1. | host | 'localhost' | エンドポイントとなるBrokerのアドレス（FQDNまたはIPアドレス） |
@@ -83,7 +83,7 @@ CDRシリアライズ版とJSONシリアライズ版いずれの通信モジュ�
 | 10. | clrrm | False | Clear retained message。RetainによりBrokerに保持された最新メッセージは、明示的に削除されない限り保持が継続する。True指定でBrokerに保持された最新メッセージを削除する。Retainedメッセージの削除は、OutPortPahoPublisherモジュールまたはOutPortPahoPubJsonモジュールからのみ可能 |
 | 11. | will | False | MQTT ver.3.1.1におけるWill（遺言）の機能を使用するか否か。Willを有効化（True）すると、Publisher（OutPort）側で何らかの障害が発生し、正常にdisconnectせずにBrokerから切断された場合に、BrokerからSubscriber（InPort）に対して予め指定していたWillメッセージが即座に送信される。WillメッセージはRTMにおける各種データ型の各項目に数値0（文字列の場合は文字0、Booleanの場合はFalse）が入力されたものとなる。現時点では基本データ型（BasicDataTypes）と拡張データ型（ExtendedDataTypes）のみに対応。WillはOutPortPahoPublisherモジュールまたはOutPortPahoPubJsonモジュールでのみ設定可能。*※ rtc.confでpreconnect指定により事前にWillを設定する場合はデータ型の指定も必要。詳細は下記Noteを参照のこと* |
 
-セキュア通信機能付きモジュール **(3) OutPortPahoPubSecure, (4) InPortPahoSubSecure, (7) OutPortPahoPubJsonSecure** および **(8) InPortPahoSubJsonSecure** に関するプロパティ
+**セキュア通信機能付き**モジュール **(3) OutPortPahoPubSecure, (4) InPortPahoSubSecure, (7) OutPortPahoPubJsonSecure** および **(8) InPortPahoSubJsonSecure** に関するプロパティ
 ||Name (Key)|Default value| 説明 |
 | :-- | :-- | :-- | :-- |
 | 1. | host | 'localhost' | エンドポイントとなるBrokerのアドレス（FQDNまたはIPアドレス） |
