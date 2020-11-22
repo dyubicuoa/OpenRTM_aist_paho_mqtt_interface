@@ -44,7 +44,7 @@ MQTT通信モジュールは以下の8つで構成されており、メッセー
 
 なお、通信モジュールにおける'Interface Type'とは、ロボットシステムを構成するRTコンポーネントのデータポート上で認識される通信インタフェース名を示しています。OpenRTM-aistにおけるInterface Typeのdefaultは'corba_cdr'ですが、下記MQTT用の通信インタフェース名を選択することで、データポートの通信をCORBAからMQTTに変えることが可能となります。
 
-**CDRシリアライズ版MQTT通信モジュール（全データ型に対応）**
+**CDRシリアライズ版MQTT通信モジュール（RTCの全データ型に対応）**
 || MQTT通信モジュール名 | Interface Type | 説明 |
 | :-- | :-- | :-- | :-- |
 | (1) | **OutPortPahoPublisher** | 'mqtt_cdr' | OutPort用MQTTデータ送信モジュール。セキュア通信機能なし |
@@ -52,7 +52,7 @@ MQTT通信モジュールは以下の8つで構成されており、メッセー
 | (3) | **OutPortPahoPubSecure** | 'mqtts_cdr' | OutPort用MQTTデータ送信モジュール。TLSによるセキュア通信機能付き |
 | (4) | **InPortPahoSubSecure** | 'mqtts_cdr' | InPort用MQTTデータ受信モジュール。TLSによるセキュア通信機能付き|
 
-**JSONシリアライズ版MQTT通信モジュール（BasicDataTypesとExtendedDataTypesのみに対応）**
+**JSONシリアライズ版MQTT通信モジュール（RTCのBasicDataTypesとExtendedDataTypesのみに対応）**
 || MQTT通信モジュール名 | Interface Type | 説明 |
 | :-- | :-- | :-- | :-- |
 | (5) | **OutPortPahoPubJson** | 'mqtt_json' | OutPort用MQTTデータ送信モジュール。セキュア通信機能なし |
