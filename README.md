@@ -490,7 +490,7 @@ PahoMqttTest0.out?interface_type=mqtts_json&host={AWSから割り当てられた
 また、CDRシリアライズ版MQTT通信モジュールは、IoT Coreを介したデータポート間のPublish/Subscribeのみに対応しています。AWS側とはメッセージ中のpayloadのデータ形式やシリアライズ形式が異なるため、Amazon LambdaやAmazon Kinesis等他のAWSクラウドサービスとの連携はできません。**RTコンポーネントとAWSで提供している他のクラウドサービスとの連携を図りたい場合は、JSONシリアライズ版MQTT通信モジュールを使用してください。**
 
 ### D) OutPortPahoPublisherまたはOutPortPahoPubSecureモジュールのrtc.confでpreconnect指定により事前にWillを設定するには
-以下のように、rtc.conf内でpreconnect指定により、willの設定に加えて、**データポートのデータ型（data_type）**も設定する必要があります。
+以下のように、rtc.conf内でpreconnect指定により、willの設定に加えて、**データポートのデータ型（data_type）** も設定する必要があります。
 ```bash
 # rtc.conf example to enable 'Will' function
 ：
@@ -508,7 +508,7 @@ ConsoleIn0.out?interface_type=mqtt_cdr&will=True&data_type=TimedLong
 これは、OpenRTM-aistにおける各種データ型に対応したWillメッセージを作成する上で、ミドルウェア側からデータポートのデータ型を取得する必要があるのですが、rtc.confのpreconnect指定ではデータ型のプロパティを取得できないためです。RTSystemEditorからの直接操作でWillを設定する場合においては、問題なくミドルウェア側からデータ型を取得できるため、データ型の入力は省略することができます。
 
 ### E) rtc.confでpreconnect指定による事前設定でJSONシリアライズ版モジュールを使用する場合に必須となる設定項目
-JSONシリアライズ版モジュールを、rtc.conf内でpreconnect指定により使用する場合は、**データポートのデータ型（data_type）**も設定する必要があります。これはOutPort用、InPort用どちらのモジュールを使用する場合も必須の設定項目となります。
+JSONシリアライズ版モジュールを、rtc.conf内でpreconnect指定により使用する場合は、**データポートのデータ型（data_type）** も設定する必要があります。これはOutPort用、InPort用どちらのモジュールを使用する場合も必須の設定項目となります。
 ```bash
 # rtc.conf example to preconfigure JSON serialized modules
 ：
