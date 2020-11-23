@@ -33,6 +33,7 @@ OpenRTM_aist_paho_mqtt_interface
 └--samples
    └--launch_scripts
    |  └--OpenRTM-aistのExample RTC（SeqIO, SimpleIO, Slider_and_Motor）の起動スクリプト
+   |     ※ 通信モジュールの動作確認用スクリプト。使用方法等詳細は下部Note A)を参照のこと
    |
    └--rtc_conf
       └--rtc.confの設定例ファイル群
@@ -62,7 +63,7 @@ MQTT通信モジュールは以下の8つで構成されており、メッセー
 
 <img src="https://user-images.githubusercontent.com/40682353/99896958-af449e80-2cd8-11eb-8675-7f04aa4bca00.png" width=100%>
 
-CDRシリアライズ版モジュールはOpenRTM-aistにおけるベースのシリアライズ（マーシャル）形式であるCORBA CDR（Common Data Representation）でシリアライズされたデータをそのままPayloadとして用います。CDRシリアライズが採用されている現行の外部システムは稀であることから、CDRシリアライズ版モジュールはRTシステムにおけるデータポート間の通信にしか利用できず、RTシステム外部の一般のMQTTシステムとの連携はできません。しかしながら、RTシステム中のデータポート間の通信においては、データ処理が軽いことから**JSONシリアライズ版モジュールよりも通信上のパフォーマンスは高くなります**。ですので、RTシステム内でMQTT通信が完結するのであれば、CDRシリアライズ版モジュールの使用をおすすめします。なぜCDRシリアライズ版の方がJSONシリアライズ版よりもデータ処理が軽くなるのか技術的な背景は、最下部のNote E)にまとめていますので、そちらを参考にしてください。
+CDRシリアライズ版モジュールはOpenRTM-aistにおけるベースのシリアライズ（マーシャル）形式であるCORBA CDR（Common Data Representation）でシリアライズされたデータをそのままPayloadとして用います。CDRシリアライズが採用されている現行の外部システムは稀であることから、CDRシリアライズ版モジュールはRTシステムにおけるデータポート間の通信にしか利用できず、RTシステム外部の一般のMQTTシステムとの連携はできません。しかしながら、RTシステム中のデータポート間の通信においては、データ処理が軽いことから**JSONシリアライズ版モジュールよりも通信上のパフォーマンスは高くなります**。ですので、RTシステム内でMQTT通信が完結するのであれば、CDRシリアライズ版モジュールの使用をおすすめします。なぜCDRシリアライズ版の方がJSONシリアライズ版よりもデータ処理が軽くなるのか技術的な背景は、最下部のNote B)にまとめていますので、そちらを参考にしてください。
 
 <img src="https://user-images.githubusercontent.com/40682353/99896987-eb77ff00-2cd8-11eb-8b10-211355e0aa32.png" width=100%>
 
@@ -404,7 +405,7 @@ OpenRTPを起動し、RTSystemEditorのSystem Diagramに先ほど実行したRT�
 
 <img src="https://user-images.githubusercontent.com/40682353/93169326-d4a8af80-f75f-11ea-845a-9a0dc91d97df.png" width=70%>
 
-データ送信側RTコンポーネントConsoleInのOutPortを右クリックし、"接続"を選択します。このように**MQTT通信インタフェースではデータポート間の結線は行いません**。RTSystemEditorからの直接操作による、データポートのBrokerへの接続に関する注意点をNote A)にまとめましたので参考にしてください。
+データ送信側RTコンポーネントConsoleInのOutPortを右クリックし、"接続"を選択します。このように**MQTT通信インタフェースではデータポート間の結線は行いません**。RTSystemEditorからの直接操作による、データポートのBrokerへの接続に関する注意点をNote E)にまとめましたので参考にしてください。
 
 <img src="https://user-images.githubusercontent.com/40682353/99870241-05e8a480-2c15-11eb-982c-0aa3d80ac242.png" width=40%>
 
@@ -436,15 +437,24 @@ Connector ProfileダイアログにBufferの各種設定と、MQTT通信モジ�
 
 ## Note
 
-### A) データポート間の結線について
-RTSystemEditorからの直接操作により、MQTT通信インタフェースを通してデータポートをMQTT Brokerへ接続する際は、**データポート右クリックでの接続が基本**となります。データポート間の結線によるBrokerへの接続も可能ですが、できるだけ行わないでください。どうしても結線したい場合はプロパティのClient IDはバッティングを避けるため、デフォルトのランダム値を使用するようにしてください。また、1対Nで結線する場合、例えばOutPort一つに対して複数のInPortをすべて結線してBrokerに接続するケースにおいては、OutPort側の通信モジュールのインスタンスが複数立ち上がるため、同一Topicのままだとメッセージングが多重化してしまい想定通りの通信を行えなくなるので気をつけてください。このケースでは、一つの結線ごとに別のTopicを設定することで問題を回避できます。
-
-### B) MQTT通信インタフェース動作確認用 Example RTC の起動スクリプト
+### A) MQTT通信インタフェース動作確認用 Example RTC の起動スクリプト
 産業技術総合研究所 安藤様から、OpenRTM-aistで用意されているRTコンポーネントのExampleのうち、"SeqIO"と"SimpleIO"、"Slider_and_Motor"の起動スクリプトをご提供いただきました。MQTT通信インタフェースの動作確認を手早く行いたい方向けのスクリプトとなります。samples/launch_scriptsフォルダ内に追加しましたのでよろしければお試しください。
 
 なお、起動スクリプトの実行には、実行するローカルマシン内で稼働する何らかのMQTT Brokerが必要となります。起動スクリプトの実行前に、Eclipse Mosquitto等OSSのBrokerを予めインストールし起動しておいてください。
 
 また、"Slider_and_Motor"についてはパッケージ"python3-tk"（Python3系）もしくは"python-tk"（Python2系）が必要になります。script実行前に、コマンドラインから`sudo apt install python3-tk`または`sudo apt install python-tk`により、該当のパッケージをインストールしてください。これに加えて、"Slider_and_Motor"の実行可能な環境はDesktopのみとなります。Server環境やDocker等のContainer環境を使用されている方はご注意ください。
+
+### B) CDRシリアライズ版モジュールとJSONシリアライズ版モジュールにおけるデータ処理の違い
+
+<img src="https://user-images.githubusercontent.com/40682353/99897049-853fac00-2cd9-11eb-9f66-62b90a54f744.png" width=100%>
+
+OpenRTM-aistのver.1.2.xまでは、上図の通りRTコンポーネントでwrite関数が呼ばれた際に、OutPort用の通信モジュールがミドルウェア側から受け取れるのはCDRでシリアライズ（マーシャル）済みのデータとなります。CDRシリアライズ版のOutPort用MQTT通信モジュールでは、このミドルウェア側から受け取ったCDRデータをそのままpayloadとしてMQTT Messageに埋め込んだものを送信メッセージとして扱います。一方の受信側においても、InPort用通信モジュールで受け取ったデータをCDRでシリアライズされた状態でミドルウェア側に渡す必要があります。この点、CDRシリアライズ版InPort用MQTT通信モジュールでは、受け取ったMQTT Message中のpayloadはCDRデータであるため、payloadとして取り出したデータをそのままミドルウェア側に渡すことができるため、余計な処理が発生しません。
+
+<img src="https://user-images.githubusercontent.com/40682353/99897050-9983a900-2cd9-11eb-9738-fc3a0af81aee.png" width=100%>
+
+これに対して、JSONシリアライズ版MQTT通信モジュールでは、CDR⇔JSONに示すシリアライズフォーマットの相互変換が必要になります。すなわち、JSONシリアライズ版のOutPort用MQTT通信モジュールでは、ミドルウェア側から受け取ったCDRデータを一旦デシリアライズ（アンマーシャル）し、データ型オブジェクトを得た上で、そこからJSONにシリアライズし直す、という処理を行っています。一方のInPort側においても該当処理の逆の過程が必要となります。つまり、受け取ったMQTT Message中のpayloadはJSONデータであることから、ミドルウェア側にデータを渡すために、一旦JSONデータをデシリアライズし、辞書型オブジェクトを得た上で、そこからCDRにシリアライズし直す、という一連の処理を行います。
+
+このように、JSONシリアライズ版MQTT通信モジュールは、CDRシリアライズ版と比べて余分な処理が発生してしまうことから、総じてデータポート間の通信パフォーマンスは劣ることになります。これに加えてCDRデータはbinaryであるのに対して、JSONデータはtextあることもパフォーマンスが劣後する一因と言えます。
 
 ### C) AWS IoT Core への接続について
 セキュア通信機能付きMQTT通信モジュール（OutPortPahoPubSecure, InPortPahoSubSecure, OutPortPahoPubJsonSecureまたはInPortPahoSubJsonSecure）を用いれば、IoTプラットフォームの AWS IoT Core を中継地点（Broker）としたデータポート間のデータ送受信が可能です。AWSにてThing設定時に得られた情報をもとに、IoT Core へ接続したいRTコンポーネント用のrtc.confを以下のように書き換えてください。以下の事例はJSONシリアライズ版MQTT通信モジュールを用いて、OutPortを Iot Core に接続するケースとなります。
@@ -482,17 +492,8 @@ ConsoleIn0.out?interface_type=mqtt_cdr&will=True&data_type=TimedLong
 
 これは、OpenRTM-aistにおける各種データ型に対応したWillメッセージを作成する上で、ミドルウェア側からデータポートのデータ型を取得する必要があるのですが、rtc.confのpreconnect指定ではデータ型のプロパティを取得できないためです。RTSystemEditorからの直接操作でWillを設定する場合においては、問題なくミドルウェア側からデータ型を取得できるため、データ型の入力は省略することができます。
 
-### E) CDRシリアライズ版モジュールとJSONシリアライズ版モジュールにおけるデータ処理の違い
-
-<img src="https://user-images.githubusercontent.com/40682353/99897049-853fac00-2cd9-11eb-9f66-62b90a54f744.png" width=100%>
-
-OpenRTM-aistのver.1.2.xまでは、上図の通りRTコンポーネントでwrite関数が呼ばれた際に、OutPort用の通信モジュールがミドルウェア側から受け取れるのはCDRでシリアライズ（マーシャル）済みのデータとなります。CDRシリアライズ版のOutPort用MQTT通信モジュールでは、このミドルウェア側から受け取ったCDRデータをそのままpayloadとしてMQTT Messageに埋め込んだものを送信メッセージとして扱います。一方の受信側においても、InPort用通信モジュールで受け取ったデータをCDRでシリアライズされた状態でミドルウェア側に渡す必要があります。この点、CDRシリアライズ版InPort用MQTT通信モジュールでは、受け取ったMQTT Message中のpayloadはCDRデータであるため、payloadとして取り出したデータをそのままミドルウェア側に渡すことができるため、余計な処理が発生しません。
-
-<img src="https://user-images.githubusercontent.com/40682353/99897050-9983a900-2cd9-11eb-9738-fc3a0af81aee.png" width=100%>
-
-これに対して、JSONシリアライズ版MQTT通信モジュールでは、CDR⇔JSONに示すシリアライズフォーマットの相互変換が必要になります。すなわち、JSONシリアライズ版のOutPort用MQTT通信モジュールでは、ミドルウェア側から受け取ったCDRデータを一旦デシリアライズ（アンマーシャル）し、データ型オブジェクトを得た上で、そこからJSONにシリアライズし直す、という処理を行っています。一方のInPort側においても該当処理の逆の過程が必要となります。つまり、受け取ったMQTT Message中のpayloadはJSONデータであることから、ミドルウェア側にデータを渡すために、一旦JSONデータをデシリアライズし、辞書型オブジェクトを得た上で、そこからCDRにシリアライズし直す、という一連の処理を行います。
-
-このように、JSONシリアライズ版MQTT通信モジュールは、CDRシリアライズ版と比べて余分な処理が発生してしまうことから、総じてデータポート間の通信パフォーマンスは劣ることになります。これに加えてCDRデータはbinaryであるのに対して、JSONデータはtextあることもパフォーマンスが劣後する一因と言えます。
+### E) データポート間の結線について
+RTSystemEditorからの直接操作により、MQTT通信インタフェースを通してデータポートをMQTT Brokerへ接続する際は、**データポート右クリックでの接続が基本**となります。データポート間の結線によるBrokerへの接続も可能ですが、できるだけ行わないでください。どうしても結線したい場合はプロパティのClient IDはバッティングを避けるため、デフォルトのランダム値を使用するようにしてください。また、1対Nで結線する場合、例えばOutPort一つに対して複数のInPortをすべて結線してBrokerに接続するケースにおいては、OutPort側の通信モジュールのインスタンスが複数立ち上がるため、同一Topicのままだとメッセージングが多重化してしまい想定通りの通信を行えなくなるので気をつけてください。このケースでは、一つの結線ごとに別のTopicを設定することで問題を回避できます。
 
 ### 動作確認済みの環境
 * Ubuntu 16.04, x86-64 CPU
