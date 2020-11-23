@@ -63,7 +63,7 @@ MQTT通信モジュールは以下の8つで構成されており、メッセー
 
 <img src="https://user-images.githubusercontent.com/40682353/99896958-af449e80-2cd8-11eb-8675-7f04aa4bca00.png" width=100%>
 
-CDRシリアライズ版モジュールはOpenRTM-aistにおけるベースのシリアライズ（マーシャル）形式であるCORBA CDR（Common Data Representation）でシリアライズされたデータをそのままPayloadとして用います。CDRシリアライズが採用されている現行の外部システムは稀であることから、CDRシリアライズ版モジュールはRTシステムにおけるデータポート間の通信にしか利用できず、RTシステム外部の一般のMQTTシステムとの連携はできません。しかしながら、RTシステム中のデータポート間の通信においては、データ処理が軽いことから**JSONシリアライズ版モジュールよりも通信上のパフォーマンスは高くなります**。ですので、RTシステム内でMQTT通信が完結するのであれば、CDRシリアライズ版モジュールの使用をおすすめします。なぜCDRシリアライズ版の方がJSONシリアライズ版よりもデータ処理が軽くなるのか技術的な背景は、最下部のNote B)にまとめていますので、そちらを参考にしてください。
+CDRシリアライズ版モジュールはOpenRTM-aistにおけるベースのシリアライズ（マーシャル）形式であるCORBA CDR（Common Data Representation）でシリアライズされたデータをそのままPayloadとして用います。CDRシリアライズが採用されている現行の外部システムは稀であることから、CDRシリアライズ版モジュールはRTシステムにおけるデータポート間の通信にしか利用できず、RTシステム外部の一般のMQTTシステムとの連携はできません。しかしながら、RTシステム中のデータポート間の通信においては、データ処理が軽いことから**JSONシリアライズ版モジュールよりも通信上のパフォーマンスは高くなります**。ですので、RTシステム内でMQTT通信が完結するのであれば、CDRシリアライズ版モジュールの使用をおすすめします。なぜCDRシリアライズ版の方がJSONシリアライズ版よりもデータ処理が軽くなるのか技術的な背景は、ページ下部のNote B)にまとめていますので、そちらを参考にしてください。
 
 <img src="https://user-images.githubusercontent.com/40682353/99896987-eb77ff00-2cd8-11eb-8b10-211355e0aa32.png" width=100%>
 
@@ -274,7 +274,7 @@ manager.modules.preload: OutPortPahoPubJson.py
 manager.components.preconnect: ConsoleIn0.out?interface_type=mqtt_json&data_type=TimedLong&retain=true&will=true
 ```
 
-注意点ですが、**preconnect指定によりJSONシリアライズ版MQTT通信モジュールを利用する場合はデータポートのデータ型を"data_type"にて指定する必要があります**。RTSystemEditorで直接プロパティを入力する場合はデータ型を指定する必要はありません。また、CDRシリアライズ版かJSONシリアライズ版に関係なくMQTTの一部機能である'Will'を利用する場合も、これと同様にpreconnect指定で事前設定するケースにおいてのみデータ型の指定が必要です。詳細はNote D)を参照してください。
+注意点ですが、**preconnect指定によりJSONシリアライズ版MQTT通信モジュールを利用する場合はデータポートのデータ型を"data_type"にて指定する必要があります**。RTSystemEditorで直接プロパティを入力する場合はデータ型を指定する必要はありません。また、CDRシリアライズ版かJSONシリアライズ版に関係なくMQTTの一部機能である'Will'を利用する場合も、これと同様にpreconnect指定で事前設定するケースにおいてのみデータ型の指定が必要です。詳細はNote E) および D)を参照してください。
 
 一つのRTコンポーネント（RTC名：PahoMqttTest）にOutPort(ポート名：out）もInPort（ポート名：in）も備わっており、そのどちらもセキュア通信機能付きのCDRシリアライズ版MQTT通信インタフェースを通してデータの送受信を行いたい場合は以下のように","で区切ってモジュール名を2つ指定します。どちらのデータポートもBrokerへの自動接続を行いたい場合も同様に","で区切って、各データポートの通信インタフェースや関連するプロパティを設定します。
 ```bash
@@ -291,7 +291,6 @@ PahoMqttTest0.in?interface_type=mqtts_cdr&cacert=./tls/ca.crt&cltcert=./tls/clt.
 ```
 
 MQTT通信モジュールへのpathはインストール先を指定するか、インストール後であればcloneしたレポジトリ内にあるモジュールを指定しても構いません。"rtc.conf"の設定例はリポジトリの"OpenRTM_aist_paho_mqtt_module/samples/rtc_conf/"配下に置いてあるので参考にしてください。
-
 
 #### (2) RTコンポーネントの実行
 (1)で設定したrtc.confを"-f"オプションで指定し、ターゲットとなるRTコンポーネントを実行します。
@@ -405,7 +404,7 @@ OpenRTPを起動し、RTSystemEditorのSystem Diagramに先ほど実行したRT�
 
 <img src="https://user-images.githubusercontent.com/40682353/93169326-d4a8af80-f75f-11ea-845a-9a0dc91d97df.png" width=70%>
 
-データ送信側RTコンポーネントConsoleInのOutPortを右クリックし、"接続"を選択します。このように**MQTT通信インタフェースではデータポート間の結線は行いません**。RTSystemEditorからの直接操作による、データポートのBrokerへの接続に関する注意点をNote E)にまとめましたので参考にしてください。
+データ送信側RTコンポーネントConsoleInのOutPortを右クリックし、"接続"を選択します。このように**MQTT通信インタフェースではデータポート間の結線は行いません**。RTSystemEditorからの直接操作による、データポートのBrokerへの接続に関する注意点をNote F)にまとめましたので参考にしてください。
 
 <img src="https://user-images.githubusercontent.com/40682353/99870241-05e8a480-2c15-11eb-982c-0aa3d80ac242.png" width=40%>
 
@@ -492,7 +491,25 @@ ConsoleIn0.out?interface_type=mqtt_cdr&will=True&data_type=TimedLong
 
 これは、OpenRTM-aistにおける各種データ型に対応したWillメッセージを作成する上で、ミドルウェア側からデータポートのデータ型を取得する必要があるのですが、rtc.confのpreconnect指定ではデータ型のプロパティを取得できないためです。RTSystemEditorからの直接操作でWillを設定する場合においては、問題なくミドルウェア側からデータ型を取得できるため、データ型の入力は省略することができます。
 
-### E) データポート間の結線について
+### E) rtc.confでpreconnect指定による事前設定でJSONシリアライズ版モジュールを使用する場合に必須となる設定項目
+JSONシリアライズ版モジュールを、rtc.conf内でpreconnect指定により使用する場合は、データポートのデータ型（data_type）も設定する必要があります。これはOutPort用、InPort用どちらのモジュールを使用する場合も必須の設定項目となります。
+```bash
+# rtc.conf example to preconfigure JSON serialized modules
+：
+# MQTT通信モジュールへのpath
+manager.modules.load_path: /usr/local/lib/python3.6/dist-packages/OpenRTM_aist_paho_mqtt_module
+# MQTT通信モジュール名
+manager.modules.preload: InPortPahoSubJson.py
+# data_typeによるRTCデータ型の指定
+manager.components.preconnect: \
+ConsoleOut0.in?interface_type=mqtt_json&data_type=TimedLong
+```
+
+これに対して、RTSystemEditorにて直接プロパティを設定するケースにおいては、データ型を入力する必要はありません。
+
+これは、通信モジュールがミドルウェア側から受け取ったデータをJSONデータに変換する過程において、ミドルウェア側からデータポートのデータ型を取得する必要があるのですが、rtc.confのpreconnect指定ではデータ型のプロパティを取得できないためです。RTSystemEditorからの直接操作でJSONシリアライズ版モジュールを指定するケースにおいては、問題なくミドルウェア側からデータ型を取得できるため、データ型の入力は省略することができます。
+
+### F) データポート間の結線について
 RTSystemEditorからの直接操作により、MQTT通信インタフェースを通してデータポートをMQTT Brokerへ接続する際は、**データポート右クリックでの接続が基本**となります。データポート間の結線によるBrokerへの接続も可能ですが、できるだけ行わないでください。どうしても結線したい場合はプロパティのClient IDはバッティングを避けるため、デフォルトのランダム値を使用するようにしてください。また、1対Nで結線する場合、例えばOutPort一つに対して複数のInPortをすべて結線してBrokerに接続するケースにおいては、OutPort側の通信モジュールのインスタンスが複数立ち上がるため、同一Topicのままだとメッセージングが多重化してしまい想定通りの通信を行えなくなるので気をつけてください。このケースでは、一つの結線ごとに別のTopicを設定することで問題を回避できます。
 
 ### 動作確認済みの環境
