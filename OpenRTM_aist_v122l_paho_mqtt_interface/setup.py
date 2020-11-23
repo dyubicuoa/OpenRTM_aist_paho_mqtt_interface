@@ -7,12 +7,13 @@ install_requires = [
 
 packages = [
   'OpenRTM_aist_paho_mqtt_module',
-  'OpenRTM_aist_paho_mqtt_module.paho_client'
+  'OpenRTM_aist_paho_mqtt_module.paho_client',
+  'OpenRTM_aist_paho_mqtt_module.reserializer'
 ]
 
 setup(
   name='OpenRTM_aist_paho_mqtt_module',
-  version='0.5.0',
+  version='0.5.1',
   description='MQTT interface modules on OpenRTM-aist',
   author='Daishi Yoshino',
   author_email = 'daishi-y@u-aizu.ac.jp',

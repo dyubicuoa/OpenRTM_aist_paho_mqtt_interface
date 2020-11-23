@@ -1,3 +1,7 @@
+## 0.5.1 (November 23, 2020)
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. re-serializeモジュールがインストールされるようsetup.pyを修正
+
 ## 0.5.0 (November 20, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
 1. JSONシリアライズ版MQTT通信モジュールを４つ追加
