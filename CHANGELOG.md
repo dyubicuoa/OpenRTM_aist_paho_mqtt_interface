@@ -1,3 +1,12 @@
+## 0.6.0 (December 7, 2020)
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. re-serializeモジュール中のreserialize関数から、RTCデータ型オブジェクトとDictオブジェクト間の相互変換を行う関数をconvertとして分離
+1. convert関数にて、RTCデータ型オブジェクトとDictオブジェクト間の相互変換をデータ型毎にクラス定義していたのを取りやめ、イテレータと再帰により相互変換を簡略化
+1. MQTTの機能'Will'について、OpenRTM_aistのinstantiateDataType関数を用いてWillメッセージを作成するように変更
+
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュール
+1. PythonでJSONデータをdeserializeすると、stringがunicodeに変換されることから、再度stringに変換するよう修正
+
 ## 0.5.1 (November 23, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
 1. re-serializeモジュールがインストールされるようsetup.pyを修正
