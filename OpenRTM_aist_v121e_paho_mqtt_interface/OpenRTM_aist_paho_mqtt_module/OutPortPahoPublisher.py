@@ -4,7 +4,7 @@
 ##
 # @file  OutPortPahoPublisher.py
 # @brief OutPortPahoPublisher class
-# @date   2020/12/07
+# @date   2020/12/09
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -18,17 +18,10 @@ from omniORB import *
 import OpenRTM_aist
 import OpenRTM
 import RTC
-import signal
-import os
 import time
-import threading
 import sys
 from OpenRTM_aist_paho_mqtt_module.paho_client.PahoPublisher import PahoPublisher
-
-# There was a Ctrl+C interruption or not
-stop = False
-# Constructor was called already or not
-called = False
+from OpenRTM_aist.ManagerActionListener import ManagerActionListeners
 
 ##
 # @class OutPortPahoPublisher
@@ -39,37 +32,15 @@ class OutPortPahoPublisher(OpenRTM_aist.InPortConsumer, PahoPublisher):
   """
 
   ##
-  # @brief Signal handler
-  #
-  @staticmethod
-  def signal_handler(num, frame):
-    global stop
-    print(" Ctrl+C interrupted.")
-    stop = True
-    if called == False:
-      os._exit(0)
-
-  ##
-  # @brief Shutdown hook
-  #
-  def catch_signal(self):
-    while not stop:
-      time.sleep(1)
-    self.__del__()
-    os._exit(0)
-
-  ##
   # @brief Constructor
   #
   def __init__(self):
-    global called
     PahoPublisher.__init__(self)
     self._rtcout = OpenRTM_aist.Manager.instance().getLogbuf("OutPortPahoPublisher")
     self._properties = None
-    thread = threading.Thread(target=self.catch_signal)
-    thread.daemon = True
-    thread.start()
-    called = True
+
+    self._mgr = OpenRTM_aist.Manager.instance()
+    self._mgr.addManagerActionListener(ManagerActionListener(self))
 
     return
 
@@ -440,9 +411,27 @@ class OutPortPahoPublisher(OpenRTM_aist.InPortConsumer, PahoPublisher):
     self.__datatype = OpenRTM_aist.instantiateDataType(eval(tmp_datatype))
 
 ##
-# @brief Catch ctrl+c interruption
+# @class ManagerActionListener
+# @brief ManagerActionListener class
 #
-signal.signal(signal.SIGINT, OutPortPahoPublisher.signal_handler)
+class ManagerActionListener(ManagerActionListeners):
+  def __init__(self, OutPortPahoPublisher):
+    self._OutPortPahoPublisher = OutPortPahoPublisher
+
+  def preShutdown(self):
+    pass
+
+  ##
+  # @brief Clean up mqtt communication module instance when RTC exit
+  #
+  def postShutdown(self):
+    self._OutPortPahoPublisher.__del__()
+
+  def preReinit(self):
+    pass
+
+  def postReinit(self):
+    pass
 
 ##
 # @brief Initialize OutPortPahoPublisher module

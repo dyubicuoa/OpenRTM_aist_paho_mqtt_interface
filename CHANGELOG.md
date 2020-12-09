@@ -1,3 +1,7 @@
+## 0.6.1 (December 9, 2020)
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. 通信モジュールのクリーンアップの実行判断を、別スレッドにおけるCtrl+Cのシグナルキャッチから、RTC終了時（Manager終了時）に変更。このため、Managerに対してManagerActionListenerを追加
+
 ## 0.6.0 (December 7, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
 1. re-serializeモジュール中のreserialize関数から、RTCデータ型オブジェクトとDictオブジェクト間の相互変換を行う関数をconvertとして分離

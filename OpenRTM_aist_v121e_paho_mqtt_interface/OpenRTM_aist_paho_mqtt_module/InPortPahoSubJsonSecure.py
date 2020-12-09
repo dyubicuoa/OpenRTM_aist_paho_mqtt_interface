@@ -4,7 +4,7 @@
 ##
 # @file   InPortPahoSubJsonSecure.py
 # @brief  InPortPahoSubJsonSecure class
-# @date   2020/12/07
+# @date   2020/12/09
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -18,18 +18,11 @@ from omniORB import any
 import OpenRTM_aist
 import OpenRTM__POA,OpenRTM
 import RTC
-import signal
-import os
 import time
-import threading
 import sys
 from OpenRTM_aist_paho_mqtt_module.paho_client.PahoSubSecure import PahoSubSecure
 from OpenRTM_aist_paho_mqtt_module.reserializer.DataTypeFormat import DataTypeFormat
-
-# There was a Ctrl+C interruption or not
-stop = False
-# Constructor was called already or not
-called = False
+from OpenRTM_aist.ManagerActionListener import ManagerActionListeners
 
 ##
 # @class InPortPahoSubJsonSecure
@@ -41,30 +34,9 @@ class InPortPahoSubJsonSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
   """
 
   ##
-  # @brief Signal handler
-  #
-  @staticmethod
-  def signal_handler(num, frame):
-    global stop
-    print(" Ctrl+C interrupted.")
-    stop = True
-    if called == False:
-      os._exit(0)
-
-  ##
-  # @brief Shutdown hook
-  #
-  def catch_signal(self):
-    while not stop:
-      time.sleep(1)
-    self.__del__()
-    os._exit(0)
-
-  ##
   # @brief Constructor
   #
   def __init__(self):
-    global called
     OpenRTM_aist.InPortProvider.__init__(self)
     PahoSubSecure.__init__(self)
 
@@ -74,15 +46,11 @@ class InPortPahoSubJsonSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
     self._profile = None
     self._listeners = None
 
-    orb = OpenRTM_aist.Manager.instance().getORB()
-
     callback = self.on_message
     PahoSubSecure.set_on_message(self, callback)
 
-    thread = threading.Thread(target=self.catch_signal)
-    thread.daemon = True
-    thread.start()
-    called = True
+    self._mgr = OpenRTM_aist.Manager.instance()
+    self._mgr.addManagerActionListener(ManagerActionListener(self))
 
     return
 
@@ -507,9 +475,27 @@ class InPortPahoSubJsonSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
     self.__datatype = OpenRTM_aist.instantiateDataType(eval(tmp_datatype))
 
 ##
-# @brief Catch ctrl+c interruption
+# @class ManagerActionListener
+# @brief ManagerActionListener class
 #
-signal.signal(signal.SIGINT, InPortPahoSubJsonSecure.signal_handler)
+class ManagerActionListener(ManagerActionListeners):
+  def __init__(self, InPortPahoSubJsonSecure):
+    self._InPortPahoSubJsonSecure = InPortPahoSubJsonSecure
+
+  def preShutdown(self):
+    pass
+
+  ##
+  # @brief Clean up mqtt communication module instance when RTC exit
+  #
+  def postShutdown(self):
+    self._InPortPahoSubJsonSecure.__del__()
+
+  def preReinit(self):
+    pass
+
+  def postReinit(self):
+    pass
 
 ##
 # @brief Initialize InPortPahoSubJsonSecure module
