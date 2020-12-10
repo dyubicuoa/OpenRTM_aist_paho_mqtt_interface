@@ -4,7 +4,7 @@
 ##
 # @file  OutPortPahoPubJsonSecure.py
 # @brief OutPortPahoPubJsonSecure class
-# @date   2020/12/09
+# @date   2020/12/10
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -22,7 +22,7 @@ import time
 import sys
 from OpenRTM_aist_paho_mqtt_module.paho_client.PahoPubSecure import PahoPubSecure
 from OpenRTM_aist_paho_mqtt_module.reserializer.DataTypeFormat import DataTypeFormat
-from OpenRTM_aist.ManagerActionListener import ManagerActionListeners
+from OpenRTM_aist.ManagerActionListener import ManagerActionListener
 
 ##
 # @class OutPortPahoPubJsonSecure
@@ -50,9 +50,6 @@ class OutPortPahoPubJsonSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
   #
   def __del__(self, CorbaConsumer=PahoPubSecure):
     self._rtcout.RTC_PARANOID("~OutPortPahoPubJsonSecure()")
-    print("[disconnecting from MQTT broker start]")
-    PahoPubSecure.paho_disconnect(self)
-    print("[disconnecting from MQTT broker end]")
     PahoPubSecure.__del__(self)
     return
 
@@ -471,7 +468,7 @@ class OutPortPahoPubJsonSecure(OpenRTM_aist.InPortConsumer, PahoPubSecure):
 # @class ManagerActionListener
 # @brief ManagerActionListener class
 #
-class ManagerActionListener(ManagerActionListeners):
+class ManagerActionListener(ManagerActionListener):
   def __init__(self, OutPortPahoPubJsonSecure):
     self._OutPortPahoPubJsonSecure = OutPortPahoPubJsonSecure
 
@@ -482,7 +479,9 @@ class ManagerActionListener(ManagerActionListeners):
   # @brief Clean up mqtt communication module instance when RTC exit
   #
   def postShutdown(self):
-    self._OutPortPahoPubJsonSecure.__del__()
+    print("[disconnecting from MQTT broker start]")
+    self._OutPortPahoPubJsonSecure.paho_disconnect()
+    print("[disconnecting from MQTT broker end]")
 
   def preReinit(self):
     pass

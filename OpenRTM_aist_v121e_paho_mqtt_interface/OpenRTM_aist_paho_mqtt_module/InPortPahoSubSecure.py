@@ -4,7 +4,7 @@
 ##
 # @file   InPortPahoSubSecure.py
 # @brief  InPortPahoSubSecure class
-# @date   2020/12/09
+# @date   2020/12/10
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -20,7 +20,6 @@ import OpenRTM__POA,OpenRTM
 import time
 import sys
 from OpenRTM_aist_paho_mqtt_module.paho_client.PahoSubSecure import PahoSubSecure
-from OpenRTM_aist.ManagerActionListener import ManagerActionListeners
 
 ##
 # @class InPortPahoSubSecure
@@ -56,9 +55,6 @@ class InPortPahoSubSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
   # @brief Destructor
   #
   def __del__(self):
-    print("[disconnecting from MQTT broker start]")
-    PahoSubSecure.paho_disconnect(self)
-    print("[disconnecting from MQTT broker end]")
     PahoSubSecure.__del__(self)
     return
 
@@ -404,7 +400,7 @@ class InPortPahoSubSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
 # @class ManagerActionListener
 # @brief ManagerActionListener class
 #
-class ManagerActionListener(ManagerActionListeners):
+class ManagerActionListener:
   def __init__(self, InPortPahoSubSecure):
     self._InPortPahoSubSecure = InPortPahoSubSecure
 
@@ -415,7 +411,9 @@ class ManagerActionListener(ManagerActionListeners):
   # @brief Clean up mqtt communication module instance when RTC exit
   #
   def postShutdown(self):
-    self._InPortPahoSubSecure.__del__()
+    print("[disconnecting from MQTT broker start]")
+    self._InPortPahoSubSecure.paho_disconnect()
+    print("[disconnecting from MQTT broker end]")
 
   def preReinit(self):
     pass

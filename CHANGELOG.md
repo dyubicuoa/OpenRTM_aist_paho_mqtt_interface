@@ -1,3 +1,13 @@
+## 0.6.2 (December 10, 2020)
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. デストラクタからクリーンアップ関数paho_disconnectを分離
+
+OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュール
+1. 通信モジュール中のManagerActionListenerクラスを修正
+
+OpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
+1. 通信モジュール中のManagerActionListenerクラスを、OpenRTM_aist.ManagerActionListener中のManagerActionListenerクラスを継承するように修正
+
 ## 0.6.1 (December 9, 2020)
 OpenRTM-aist ver.1.2.1以前(Python2系）対応MQTT通信モジュールおよびOpenRTM-aist ver.1.2.2以降(Python3系）対応MQTT通信モジュール
 1. 通信モジュールのクリーンアップの実行判断を、別スレッドにおけるCtrl+Cのシグナルキャッチから、RTC終了時（Manager終了時）に変更。このため、Managerに対してManagerActionListenerを追加

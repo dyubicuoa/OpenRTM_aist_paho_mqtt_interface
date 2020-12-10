@@ -4,7 +4,7 @@
 ##
 # @file   InPortPahoSubJsonSecure.py
 # @brief  InPortPahoSubJsonSecure class
-# @date   2020/12/09
+# @date   2020/12/10
 # @author Daishi Yoshino
 #
 # Copyright (C) 2020
@@ -22,7 +22,6 @@ import time
 import sys
 from OpenRTM_aist_paho_mqtt_module.paho_client.PahoSubSecure import PahoSubSecure
 from OpenRTM_aist_paho_mqtt_module.reserializer.DataTypeFormat import DataTypeFormat
-from OpenRTM_aist.ManagerActionListener import ManagerActionListeners
 
 ##
 # @class InPortPahoSubJsonSecure
@@ -58,9 +57,6 @@ class InPortPahoSubJsonSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
   # @brief Destructor
   #
   def __del__(self):
-    print("[disconnecting from MQTT broker start]")
-    PahoSubSecure.paho_disconnect(self)
-    print("[disconnecting from MQTT broker end]")
     PahoSubSecure.__del__(self)
     return
 
@@ -478,7 +474,7 @@ class InPortPahoSubJsonSecure(OpenRTM_aist.InPortProvider, PahoSubSecure):
 # @class ManagerActionListener
 # @brief ManagerActionListener class
 #
-class ManagerActionListener(ManagerActionListeners):
+class ManagerActionListener:
   def __init__(self, InPortPahoSubJsonSecure):
     self._InPortPahoSubJsonSecure = InPortPahoSubJsonSecure
 
@@ -489,7 +485,9 @@ class ManagerActionListener(ManagerActionListeners):
   # @brief Clean up mqtt communication module instance when RTC exit
   #
   def postShutdown(self):
-    self._InPortPahoSubJsonSecure.__del__()
+    print("[disconnecting from MQTT broker start]")
+    self._InPortPahoSubJsonSecure.paho_disconnect()
+    print("[disconnecting from MQTT broker end]")
 
   def preReinit(self):
     pass
