@@ -23,6 +23,8 @@ MQTT通信モジュールを通して、IoTシステム構築ミドルウェア�
 　MQTT通信モジュールのインストール方法
 * **Usage**  
 　MQTT通信モジュールの使用方法
+ * **Advantages and Use Cases**  
+　CORBAと比べたMQTT通信モジュールの利点と、ユースケース
 * **Note**  
 　モジュールに関する補足情報や、使用する上での注意点等
 
@@ -449,6 +451,44 @@ Connector ProfileダイアログにBufferの各種設定と、MQTT通信モジ�
 <img src="https://user-images.githubusercontent.com/40682353/93169504-2d784800-f760-11ea-9b64-49ad91b6675c.png" width=70%>
 
 データ受信側RTコンポーネントConsoleOutも同じ要領で、InPort右クリックからConnector Profileの設定を行い、MQTT Brokerに単体で接続します。その後、通常通りそれぞれのRTコンポーネントをAvtivate化することでRTシステムが稼働します。
+
+## Advantages and Use Cases
+OpenRTM-aistのデフォルトの通信インタフェースであるCORBAと比べて、MQTT通信インタフェースが優れている点は以下の３つにまとめることができます。
+
+1. NAT越えやFirewall越えが必要な環境であったり、インターネットのような不特定多数が利用するネットワーク上でのシステム構築（ネットワーク上制限のある環境でのシステム構築）
+1. 多対多の通信
+1. AWS等クラウドサービスや既存のMQTT通信システムとの連携
+
+これらを念頭に、MQTT通信インタフェースを用いてシステムを構成したいシーンをユースケースとして取り上げ、以下に例示します。
+MQTT通信モジュール活用のヒントとなれば幸いです。
+
+### 1対1通信
+|<img src="https://user-images.githubusercontent.com/40682353/102053009-680a8300-3e2a-11eb-9a90-0a720d943ee3.png" width=80%>|<img src="https://user-images.githubusercontent.com/40682353/102053210-b3249600-3e2a-11eb-9e7d-94ca0800283d.png" width=80%>|
+|---|---|
+|ロボットの遠隔制御|見守りロボットシステム|
+
+### 1対多通信
+|<img src="https://user-images.githubusercontent.com/40682353/102053546-478ef880-3e2b-11eb-8388-619404bc4590.png" width=80%>|<img src="https://user-images.githubusercontent.com/40682353/102053750-9341a200-3e2b-11eb-86cc-06cf3d24a4fa.png" width=80%>|
+|---|---|
+|複数の駆動系を持つロボットの遠隔制御|スイッチングロボットの遠隔制御|
+
+『スイッチングロボットの遠隔制御』は、AWSにおけるIoTプラットフォームであるAWS IoT CoreのDevice Shadowサービスを用いることでロボットの状態をクラウド側に保持でき、サーバレスなスイッチ管理システムを構築可能です。
+
+<img src="https://user-images.githubusercontent.com/40682353/102054439-c5073880-3e2c-11eb-931a-14ef2ec42702.png" width=50%>
+
+### 多対1通信
+|<img src="https://user-images.githubusercontent.com/40682353/102054763-36df8200-3e2d-11eb-8d6f-4d3dd040923c.png" width=80%>|<img src="https://user-images.githubusercontent.com/40682353/102054836-51196000-3e2d-11eb-94ac-2d307310baa1.png" width=80%>|
+|---|---|
+|DBへの複数センサーデータの保存|工場ロボットの生産性やエラー確認のための管理（ロギング）システム|
+
+『DBへの複数センサーデータの保存』は、AWS IoT Core経由でNoSQLのAmazon DynamoDBへとJSONデータを保存できます。
+
+<img src="https://user-images.githubusercontent.com/40682353/102057322-19141c00-3e31-11eb-80a7-c7f8bc49ac91.png" width=50%>
+
+### 多対多通信
+|<img src="https://user-images.githubusercontent.com/40682353/102057581-760fd200-3e31-11eb-9871-aa2008dcf5e9.png" width=80%>|<img src="https://user-images.githubusercontent.com/40682353/102057635-8a53cf00-3e31-11eb-973c-f0684caa52a2.png" width=80%>|
+|---|---|
+|各ロボットが他のロボットの作業を把握し、協同作業を行うシステム|各ロボットが他のロボットの位置を把握し、自己の経路制御を行うシステム|
 
 ## Note
 
